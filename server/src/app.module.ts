@@ -1,8 +1,16 @@
+// src/app.module.ts
 import { Module } from '@nestjs/common';
-import { DatabaseModule } from './database/database.module';
+import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
-  imports: [DatabaseModule, UsersModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    UsersModule,
+    AuthModule,
+    DatabaseModule,
+  ],
 })
 export class AppModule {}

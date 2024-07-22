@@ -18,4 +18,7 @@ export class UsersService {
   async remove(id: number): Promise<User> {
     return this.database.user.delete({ where: { id } });
   }
+  async findByEmail(email: string): Promise<User | undefined> {
+    return this.database.user.findUnique({ where: { email } });
+  }
 }
