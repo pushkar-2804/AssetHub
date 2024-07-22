@@ -5,6 +5,7 @@ import { UsersService } from '../users/users.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { User } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -21,11 +22,15 @@ export class AuthService {
     return null;
   }
 
-  async login(user: any) {
-    const payload = { email: user.email, sub: user.id };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+  async login(loginDto: LoginDto) {
+    const user = await this.usersService.findByEmail(loginDto.email);
+    if (user && (await bcrypt.compare(loginDto.password, user.password))) {
+      const payload = { sub: user.id };
+      return {
+        access_token: this.jwtService.sign(payload),
+      };
+    }
+    throw new Error('Invalid credentials');
   }
 
   async register(createUserDto: CreateUserDto): Promise<User> {
