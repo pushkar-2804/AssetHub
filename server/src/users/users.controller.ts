@@ -25,9 +25,13 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get(':id')
-  findOne(@Param('id') id: string): Promise<User> {
-    return this.usersService.findOne(+id);
+  @Get('profile')
+  async findOne(@Body('userId') userId: string) {
+    const user = await this.usersService.findOne(+userId);
+    return {
+      userId: user.id,
+      email: user.email,
+    };
   }
 
   @UseGuards(JwtAuthGuard)
