@@ -27,17 +27,25 @@ export class AuthService {
     if (user && (await bcrypt.compare(loginDto.password, user.password))) {
       const payload = { sub: user.id };
       return {
+        id: user.id,
         access_token: this.jwtService.sign(payload),
       };
     }
     throw new Error('Invalid credentials');
   }
 
-  async register(createUserDto: CreateUserDto): Promise<User> {
+  async register(
+    createUserDto: CreateUserDto,
+  ): Promise<{ id: number; access_token: string }> {
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-    return this.usersService.create({
+    const user = await this.usersService.create({
       ...createUserDto,
       password: hashedPassword,
     });
+    const payload = { sub: user.id };
+    return {
+      id: user.id,
+      access_token: this.jwtService.sign(payload),
+    };
   }
 }
