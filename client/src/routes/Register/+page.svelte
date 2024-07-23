@@ -38,6 +38,7 @@
         if (response.ok) {
           localStorage.setItem('token', data.token);
           dispatch('registerSuccess', data);
+          goto('/');
         } else {
           errorMessage.set(data.message);
         }

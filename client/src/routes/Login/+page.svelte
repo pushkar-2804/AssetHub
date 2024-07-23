@@ -26,6 +26,7 @@
 
           localStorage.setItem('token', data.access_token);
           dispatch('loginSuccess', data);
+          window.location.href = '/';
         } else {
           errorMessage.set(data.message);
         }
