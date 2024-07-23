@@ -52,6 +52,9 @@
         </div>
         <button class="w-full bg-blue-500 text-white py-2 rounded" type="submit">Login</button>
       </form>
+      <footer class="mt-4">
+        <p>Don't have an account? <a href="/register" class="text-blue-500">Register here</a></p>
+      </footer>
     </div>
   </div>
   
