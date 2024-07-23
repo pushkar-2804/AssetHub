@@ -33,12 +33,12 @@ model Wallet {
 }
 
 model Asset {
-  id          Int        @id @default(autoincrement())
+  assetId          Int        @id @default(autoincrement())
   assetName   String
   description String
-  price       String
+  price       Int
   category    String
-  images      String
+  images      String[]
   user        User       @relation(fields: [userId], references: [id])
   userId      Int
   cartItems   CartItem[]
@@ -57,7 +57,7 @@ model CartItem {
   id      Int   @id @default(autoincrement())
   cart    Cart  @relation(fields: [cartId], references: [id])
   cartId  Int
-  asset   Asset @relation(fields: [assetId], references: [id])
+  asset   Asset @relation(fields: [assetId], references: [assetId])
   assetId Int
 }
 
