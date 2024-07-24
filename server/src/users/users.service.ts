@@ -21,4 +21,8 @@ export class UsersService {
   async findByEmail(email: string): Promise<User | undefined> {
     return this.database.user.findUnique({ where: { email } });
   }
+  // TODO: to be done
+  async logout(userId: number, token: string) {
+    return userId;
+  }
 }
