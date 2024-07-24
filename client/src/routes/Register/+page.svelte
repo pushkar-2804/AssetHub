@@ -38,7 +38,7 @@
         if (response.ok) {
           localStorage.setItem('token', data.token);
           dispatch('registerSuccess', data);
-          goto('/');
+          window.location.href = '/';
         } else {
           errorMessage.set(data.message);
         }
