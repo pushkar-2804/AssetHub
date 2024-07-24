@@ -6,15 +6,18 @@ import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './database/database.module';
 import { AssetService } from './asset/asset.service';
 import { AssetModule } from './asset/asset.module';
+import { CartService } from './cart/cart.service';
+import { CartModule } from './cart/cart.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    UsersModule,
     AssetModule,
     AuthModule,
+    CartModule,
     DatabaseModule,
+    UsersModule,
   ],
-  providers: [AssetService],
+  providers: [AssetService, CartService],
 })
 export class AppModule {}
