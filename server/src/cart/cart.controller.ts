@@ -7,17 +7,20 @@ import {
   ParseIntPipe,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CartService } from './cart.service';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { CheckoutCartDto } from './dto/checkout-cart.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @ApiTags('cart')
 @Controller('cart')
 export class CartController {
   constructor(private readonly cartService: CartService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post('add')
   @ApiOperation({ summary: 'Add asset to cart' })
   @ApiResponse({
@@ -49,6 +52,7 @@ export class CartController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('view')
   @ApiOperation({ summary: 'View cart items' })
   @ApiResponse({
@@ -70,6 +74,7 @@ export class CartController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('checkout')
   @ApiOperation({ summary: 'Checkout and purchase' })
   @ApiResponse({
