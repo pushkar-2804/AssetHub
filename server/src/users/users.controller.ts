@@ -15,10 +15,12 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiOperation,
   ApiParam,
   ApiResponse,
 } from '@nestjs/swagger';
+import { UserProfileDto } from './dto/user-profile.dto';
 
 @ApiBearerAuth()
 @Controller('users')
@@ -51,8 +53,9 @@ export class UsersController {
     status: 404,
     description: 'User not found.',
   })
-  async findOne(@Body('userId') userId: string) {
-    const user = await this.usersService.findOne(+userId);
+  @ApiBody({ type: UserProfileDto })
+  async findOne(@Body('userId') userProfileDto: UserProfileDto) {
+    const user = await this.usersService.findOne(+userProfileDto.userId);
     return {
       userId: user.id,
       email: user.email,
