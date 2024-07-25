@@ -7,7 +7,9 @@ import {
   IsArray,
   ArrayNotEmpty,
   IsNumber,
+  IsEnum,
 } from 'class-validator';
+import { AssetCategory } from 'src/enums/asset-category.enum';
 
 export class CreateAssetDto {
   @ApiProperty({ example: 1, description: 'User ID' })
@@ -29,9 +31,12 @@ export class CreateAssetDto {
   @IsNumber()
   price: number;
 
-  @ApiProperty({ example: 'Category', description: 'Category of the asset' })
-  @IsString()
-  category: string;
+  @ApiProperty({
+    example: 'GADGET',
+    description: 'Can be GADGET || DEAL || SOFTWARE',
+  })
+  @IsEnum(AssetCategory)
+  category: AssetCategory;
 
   @ApiProperty({
     example: ['image1.png', 'image2.png'],

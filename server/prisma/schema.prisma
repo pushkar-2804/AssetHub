@@ -32,12 +32,18 @@ model Wallet {
   userId        Int    @unique
 }
 
+enum Category{
+  GADGET
+  DEAL
+  SOFTWARE
+}
+
 model Asset {
   assetId     Int        @id @default(autoincrement())
   assetName   String
   description String
   price       Int
-  category    String
+  category    Category
   images      String[]
   user        User       @relation(fields: [userId], references: [id])
   userId      Int

@@ -1,12 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { Prisma } from '@prisma/client';
+import { isValidCategory } from 'src/utils/enum-validation.util';
 
 @Injectable()
 export class AssetService {
   constructor(private database: DatabaseService) {}
 
   async create(data: Prisma.AssetCreateInput) {
+    if (!isValidCategory(data.category)) {
+      throw new BadRequestException('Invalid category');
+    }
     const asset = await this.database.asset.create({
       data,
     });
@@ -33,6 +41,9 @@ export class AssetService {
     const asset = await this.database.asset.findUnique({
       where: { assetId },
     });
+    if (!asset) {
+      throw new NotFoundException('No asset found');
+    }
     return {
       assetId: asset.assetId,
       assetName: asset.assetName,
