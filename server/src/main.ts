@@ -8,8 +8,7 @@ async function bootstrap() {
 
   // Swagger setup
   const config = new DocumentBuilder()
-    .setTitle('Your API Title')
-    .setDescription('The API description')
+    .setTitle('AssetHub')
     .setVersion('1.0')
     .addBearerAuth() // Adds Bearer auth to Swagger UI
     .build();
