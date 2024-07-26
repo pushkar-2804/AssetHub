@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   UseGuards,
@@ -43,7 +44,7 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('profile')
+  @Post('profile')
   @ApiOperation({ summary: 'Get user profile' })
   @ApiResponse({
     status: 200,
@@ -54,7 +55,7 @@ export class UsersController {
     description: 'User not found.',
   })
   @ApiBody({ type: UserProfileDto })
-  async findOne(@Body('userId') userProfileDto: UserProfileDto) {
+  async findOne(@Body() userProfileDto: UserProfileDto) {
     const user = await this.usersService.findOne(+userProfileDto.userId);
     return {
       userId: user.id,
