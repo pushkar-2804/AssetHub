@@ -23,11 +23,11 @@
       image: ''
     };
 
-    name.subscribe(value => AssetData.name = value);
-    description.subscribe(value => AssetData.description = value);
-    price.subscribe(value => AssetData.price = value);
-    category.subscribe(value => AssetData.category = value);
-    image.subscribe(value => AssetData.image = value);
+    // name.subscribe(value => AssetData.name = value);
+    // description.subscribe(value => AssetData.description = value);
+    // price.subscribe(value => AssetData.price = value);
+    // category.subscribe(value => AssetData.category = value);
+    // image.subscribe(value => AssetData.image = value);
 
 
     async function handleSubmit() {

@@ -83,7 +83,7 @@
   {description}
   {price}
   {category}
-  {image} 
+  <!-- {image}  -->
 </h1>
   
   <!-- <Table assets={data.assets} /> -->
