@@ -9,7 +9,12 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CartService } from './cart.service';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { CheckoutCartDto } from './dto/checkout-cart.dto';
@@ -35,6 +40,7 @@ export class CartController {
     status: 404,
     description: 'Asset not found.',
   })
+  @ApiBearerAuth()
   async addToCart(@Body() addToCartDto: CreateCartDto) {
     try {
       return await this.cartService.addToCart(
@@ -63,6 +69,7 @@ export class CartController {
     status: 400,
     description: 'Bad request. User ID missing.',
   })
+  @ApiBearerAuth()
   async viewCart(@Query('userId', ParseIntPipe) userId: number) {
     try {
       return await this.cartService.viewCart(userId);
@@ -89,6 +96,7 @@ export class CartController {
     status: 404,
     description: 'Cart not found or already checked out.',
   })
+  @ApiBearerAuth()
   async checkout(@Body() checkoutDto: CheckoutCartDto) {
     try {
       return await this.cartService.checkout(

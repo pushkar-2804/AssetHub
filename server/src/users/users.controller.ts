@@ -67,6 +67,7 @@ export class UsersController {
   @Patch(':id')
   @ApiOperation({ summary: 'Update user details' })
   @ApiParam({ name: 'id', type: 'number', description: 'User ID to update' })
+  @ApiBody({ type: UpdateUserDto })
   @ApiResponse({
     status: 200,
     description: 'The user details have been successfully updated.',

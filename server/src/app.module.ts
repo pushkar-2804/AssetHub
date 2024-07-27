@@ -18,6 +18,6 @@ import { CartModule } from './cart/cart.module';
     DatabaseModule,
     UsersModule,
   ],
-  providers: [AssetService, CartService],
+  providers: [],
 })
 export class AppModule {}
