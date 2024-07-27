@@ -27,7 +27,7 @@ export class CreateAssetDto {
   @IsString()
   description: string;
 
-  @ApiProperty({ example: 100.5, description: 'Price of the asset' })
+  @ApiProperty({ example: 100, description: 'Price of the asset' })
   @IsNumber()
   price: number;
 
@@ -41,6 +41,9 @@ export class CreateAssetDto {
   @ApiProperty({
     example: ['image1.png', 'image2.png'],
     description: 'Images of the asset',
+    type: 'string',
+    format: 'binary',
+    isArray: true,
   })
   @IsArray()
   @ArrayNotEmpty()
