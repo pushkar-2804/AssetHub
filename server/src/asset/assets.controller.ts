@@ -19,6 +19,7 @@ import {
   ApiResponse,
   ApiQuery,
   ApiConsumes,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { storage } from 'src/utils/temp-file-storage.util';
@@ -35,6 +36,7 @@ export class AssetsController {
   @ApiResponse({ status: 201, description: 'Asset created successfully.' })
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FilesInterceptor('images', 10, { storage }))
+  @ApiBearerAuth()
   async create(
     @Body() createAssetDto: CreateAssetDto,
     @UploadedFiles() files: Express.Multer.File[],
@@ -71,6 +73,7 @@ export class AssetsController {
     type: String,
   })
   @ApiResponse({ status: 200, description: 'Assets retrieved successfully.' })
+  @ApiBearerAuth()
   async findAll(@Query() filters: any) {
     return this.assetsService.findAll(filters);
   }
@@ -82,6 +85,7 @@ export class AssetsController {
     status: 200,
     description: 'Asset details retrieved successfully.',
   })
+  @ApiBearerAuth()
   async findOne(@Param('id') id: string) {
     return this.assetsService.findOne(+id);
   }
