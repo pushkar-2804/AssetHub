@@ -7,12 +7,19 @@
     const isAuthenticated = writable(false);
 
     let token;
+    let dispatch = createEventDispatcher();
 
     function checkAuthToken() {
     if (typeof window !== 'undefined') {
       token = localStorage.getItem('token');
     }
   }
+
+    function handleLogout(){
+      localStorage.removeItem('token');
+      window.location.href = '/';
+      dispatch('logout');
+    }
 
     async function fetchUserDetails() {
 
@@ -47,6 +54,7 @@
     //   isAuthenticated.set(false);
     //   errorMessage.set('An error occurred. Please try again.');
     // }
+
   }
 
   onMount(() => {
@@ -88,7 +96,12 @@
             <!-- <span role="menuitem" tabindex="-1" class="flex justify-between w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 cursor-not-allowed opacity-50" aria-disabled="true">New feature (soon)</span> -->
             <a href="#" class="text-gray-700 flex justify-between w-full px-4 py-2 text-sm leading-5 text-left" role="menuitem" >Account settings</a></div>
           <div class="py-1">
-            <a href="#" class="text-gray-700 flex justify-between w-full px-4 py-2 text-sm leading-5 text-left"  role="menuitem" >Sign out</a></div>
+            <form on:submit={handleLogout}>
+              <button type="submit" class="text-gray-700 flex justify-between w-full px-4 py-2 text-sm leading-5 text-left" role="menuitem">
+                Sign out
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div> 

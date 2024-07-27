@@ -24,7 +24,7 @@
         const data = await response.json();
         if (response.ok) {
 
-          localStorage.setItem('token', data.access_token);
+          localStorage.setItem('token', data.token);
           dispatch('loginSuccess', data);
           window.location.href = '/';
         } else {
