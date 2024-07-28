@@ -6,18 +6,41 @@ import {
 import { DatabaseService } from 'src/database/database.service';
 import { Prisma } from '@prisma/client';
 import { isValidCategory } from 'src/utils/enum-validation.util';
+import { CreateAssetDto } from './dto/create-asset.dto';
+import { uploadImageToCloudinary } from 'src/utils/cloudinary-image.util';
 
 @Injectable()
 export class AssetService {
   constructor(private database: DatabaseService) {}
 
-  async create(data: Prisma.AssetCreateInput) {
-    if (!isValidCategory(data.category)) {
+  async create(createAssetDto: CreateAssetDto) {
+    if (!isValidCategory(createAssetDto.category)) {
       throw new BadRequestException('Invalid category');
     }
+
+    const imageUrls = await Promise.all(
+      createAssetDto.images.map((image: string) =>
+        uploadImageToCloudinary(image),
+      ),
+    );
+
+    const assetCreateInput = {
+      assetName: createAssetDto.assetName,
+      description: createAssetDto.description,
+      price: createAssetDto.price,
+      category: createAssetDto.category,
+      images: imageUrls,
+      user: {
+        connect: {
+          id: createAssetDto.userId,
+        },
+      },
+    };
+
     const asset = await this.database.asset.create({
-      data,
+      data: assetCreateInput,
     });
+
     return { assetId: asset.assetId, status: 'Asset created successfully' };
   }
 
