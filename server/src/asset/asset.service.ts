@@ -4,7 +4,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
-import { Prisma } from '@prisma/client';
 import { isValidCategory } from 'src/utils/enum-validation.util';
 import { CreateAssetDto } from './dto/create-asset.dto';
 import { uploadImageToCloudinary } from 'src/utils/cloudinary-image.util';
@@ -13,7 +12,7 @@ import { uploadImageToCloudinary } from 'src/utils/cloudinary-image.util';
 export class AssetService {
   constructor(private database: DatabaseService) {}
 
-  async create(createAssetDto: CreateAssetDto) {
+  async create(userId: number, createAssetDto: CreateAssetDto) {
     if (!isValidCategory(createAssetDto.category)) {
       throw new BadRequestException('Invalid category');
     }
@@ -32,7 +31,7 @@ export class AssetService {
       images: imageUrls,
       user: {
         connect: {
-          id: createAssetDto.userId,
+          id: userId,
         },
       },
     };

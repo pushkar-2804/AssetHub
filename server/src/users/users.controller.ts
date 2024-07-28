@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -18,10 +19,8 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
-  ApiParam,
   ApiResponse,
 } from '@nestjs/swagger';
-import { UserProfileDto } from './dto/user-profile.dto';
 
 @ApiBearerAuth()
 @Controller('users')
@@ -54,9 +53,8 @@ export class UsersController {
     status: 404,
     description: 'User not found.',
   })
-  @ApiBody({ type: UserProfileDto })
-  async findOne(@Body() userProfileDto: UserProfileDto) {
-    const user = await this.usersService.findOne(+userProfileDto.userId);
+  async findOne(@Req() req) {
+    const user = await this.usersService.findOne(+req.user.userId);
     return {
       userId: user.id,
       email: user.email,
@@ -64,9 +62,8 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Patch(':id')
+  @Patch('')
   @ApiOperation({ summary: 'Update user details' })
-  @ApiParam({ name: 'id', type: 'number', description: 'User ID to update' })
   @ApiBody({ type: UpdateUserDto })
   @ApiResponse({
     status: 200,
@@ -76,17 +73,13 @@ export class UsersController {
     status: 404,
     description: 'User not found.',
   })
-  update(
-    @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserDto,
-  ): Promise<User> {
-    return this.usersService.update(+id, updateUserDto);
+  update(@Req() req, @Body() updateUserDto: UpdateUserDto): Promise<User> {
+    return this.usersService.update(+req.user.userId, updateUserDto);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete(':id')
+  @Delete('')
   @ApiOperation({ summary: 'Delete a user' })
-  @ApiParam({ name: 'id', type: 'number', description: 'User ID to delete' })
   @ApiResponse({
     status: 200,
     description: 'The user has been successfully deleted.',
@@ -95,7 +88,7 @@ export class UsersController {
     status: 404,
     description: 'User not found.',
   })
-  remove(@Param('id') id: string): Promise<User> {
-    return this.usersService.remove(+id);
+  remove(@Req() req): Promise<User> {
+    return this.usersService.remove(+req.user.userId);
   }
 }
