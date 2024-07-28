@@ -3,7 +3,7 @@
 	let showModal = false;
 	// let editableUser = { id: null ,name: "", description: "" };
 	let selectedAsset = null;
-	export let assets = [];
+	export let data;
 	export let form;
   
 	// const handleUpdate = (data) => {
@@ -51,12 +51,12 @@
 	<div class="flex items-center justify-between mb-4">
 	  <div class="space-y-1">
 		<h2 class="text-xl font-semibold">List of Assets</h2>
-		<p class="text-sm text-gray-500">Fetched {assets.length} Assets</p>
+		<!-- <p class="text-sm text-gray-500">Fetched {data.length} Assets</p> -->
 	  </div>
 	</div>
 
 	<table class="min-w-full divide-y divide-gray-200">
-	  <thead class="bg-yellow-400">
+	  <thead class="bg-blue-400">
 		<tr>
 		  <th
 			class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
@@ -85,7 +85,7 @@
 		</tr>
 	  </thead>
 	  <tbody class="bg-white divide-y divide-gray-200">
-		{#each assets as asset (asset.id)}
+		{#each data as asset (asset.id)}
 		  <tr>
 			<td class="px-6 py-4 whitespace-nowrap">{asset.name}</td>
 			<td class="px-6 py-4 whitespace-nowrap">{asset.description}</td>

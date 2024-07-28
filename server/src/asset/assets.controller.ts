@@ -29,7 +29,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 export class AssetsController {
   constructor(private readonly assetsService: AssetService) {}
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Post('list')
   @ApiOperation({ summary: 'List a new asset' })
   @ApiResponse({ status: 201, description: 'Asset created successfully.' })
@@ -49,7 +49,7 @@ export class AssetsController {
     return this.assetsService.create(createAssetDto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Get('browse')
   @ApiOperation({ summary: 'Browse assets. Provide filters in query' })
   @ApiQuery({
@@ -75,7 +75,7 @@ export class AssetsController {
     return this.assetsService.findAll(filters);
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Get('details/:id')
   @ApiOperation({ summary: 'Get asset details' })
   @ApiResponse({
