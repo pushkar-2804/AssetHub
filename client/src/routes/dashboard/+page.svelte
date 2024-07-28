@@ -1,21 +1,134 @@
 <script>
-    import { createEventDispatcher } from "svelte";
+    import { createEventDispatcher, onMount } from "svelte";
+    import {writable} from 'svelte/store';
 
-    const dispatch = createEventDispatcher();
-    function logout() {
-      // Remove JWT token from local storage
+    function handleLogout() {
+        const dispatch = createEventDispatcher();
+        // Remove JWT token from local storage
       localStorage.removeItem('token');
-  
+      
       // Redirect to the home page
       window.location.href = '/';
-      dispatch('logout');
+        dispatch('logout');
+  }
+
+  const errorMessage = writable('');
+    const isAuthenticated = writable(false);
+    const userMail = writable('');
+    let userId = '';
+    let cartItems = [];
+    let totalPrice = 0;
+
+    let token;
+    let dispatch = createEventDispatcher();
+    let data;
+
+    function checkAuthToken() {
+    if (typeof window !== 'undefined') {
+      token = localStorage.getItem('token');
     }
+  }
+
+
+    async function fetchUserDetails() {
+
+    checkAuthToken();
+
+    if (!token) {
+      isAuthenticated.set(false);
+      window.location.href = '/login';
+      // return;
+    }
+    else {
+        isAuthenticated.set(true);
+        // return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:3000/auth/profile', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        data = await response.json();
+        console.log(data);
+        userId = data.userId;
+        // isAuthenticated.set(true);
+      } else {
+        // isAuthenticated.set(false);
+        errorMessage.set('Failed to fetch user details. Please log in again.');
+      }
+    } catch (error) {
+      // isAuthenticated.set(false);
+      errorMessage.set('An error occurred. Please try again.');
+    }
+
+    try{
+      const response = await fetch('http://localhost:3000/users/profile', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          userId: data.userId
+        })
+      });
+      if (response.ok){
+        const userMailData = await response.json();
+        console.log(userMail);
+        userMail.set(userMailData.email);
+        // isAuthenticated.set(true);
+      } else {
+        // isAuthenticated.set(false);
+        errorMessage.set('Failed to fetch user details. Please log in again.');
+      }
+    } catch (error) {
+      // isAuthenticated.set(false);
+      errorMessage.set('An error occurred. Please try again.');
+    }
+
+    fetchUserCart();
+
+  }
+
+  async function fetchUserCart(){
+    try {
+      const response = await fetch(`http://localhost:3000/cart/view?userId=${userId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      cartItems = data.cartItems;
+      totalPrice = data.totalPrice;
+    } catch (error) {
+      console.error('Error fetching cart data:', error);
+    }
+  }
+
+
+
+  onMount(() => {
+    fetchUserDetails();
+  });
   </script>
 
 
 
 <div class="flex flex-row">
-<aside class="min-h-screen bg-gray-100">
+<aside class="min-h-screen grow bg-gray-100">
     <div class="sidebar min-h-screen overflow-hidden border-r w-56 hover:bg-white hover:shadow-lg">
       <div class="flex h-screen flex-col justify-between pt-2 pb-6">
         <div>
@@ -59,7 +172,7 @@
                 </a>
               </li>
             <li class="min-w-max">
-              <a href="#" class="group flex items-center space-x-4 rounded-md px-4 py-3 text-gray-600">
+              <a href="/profile-settings" class="group flex items-center space-x-4 rounded-md px-4 py-3 text-gray-600">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                   <path class="fill-current text-gray-600 group-hover:text-cyan-600" d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z" />
                   <path class="fill-current text-gray-300 group-hover:text-cyan-300" d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z" />
@@ -71,7 +184,7 @@
           </ul>
         </div>
         <div class="w-max -mb-3">
-          <button on:click={logout} class="group flex items-center space-x-4 rounded-md px-4 py-3 text-gray-600">
+          <button on:click={handleLogout} class="group flex items-center space-x-4 rounded-md px-4 py-3 text-gray-600">
             <img src="./logout.svg" class="h-5 w-5 group-hover:fill-cyan-600" alt="logout" />
             <span class="group-hover:text-gray-700">Sign out</span>
           </button>
@@ -91,7 +204,7 @@
     <div class="flex">
       <div class="flex flex-row w-full font-medium justify-end p-6 border border-gray-100 bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
         <div class="py-2 px-3">
-          <a href="#" class="mx-1.5 py-2 px-3 md:p-0 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:dark:text-blue-500" aria-current="page">Home</a>
+          <a href="/" class="mx-1.5 py-2 px-3 md:p-0 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:dark:text-blue-500" aria-current="page">Home</a>
         </div>
         <div class="py-2 px-3">
           <a href="#" class="mx-1.5 py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Asset Listing</a>
@@ -106,31 +219,81 @@
     </div>
 
 
-    <div class="flex flex-wrap w-full h-full bg-gradient-to-r from-blue-700 to-sky-600">
-        <div class="py-2 px-3 w-full h-1/2">
-            <div class="flex justify-center w-full h-full rounded-lg bg-slate-200">
-                <div class="flex justify-center w-full h-10 bg-gray-100">
-                    <h1>Your Profile</h1>
+    <div class="flex flex-wrap grow font-medium w-full h-full bg-gradient-to-r from-blue-700 to-sky-600">
+        <div class="flex flex-row flex-wrap justify-center py-2 px-3 rounded-lg w-full h-1/2">
+            <section class="py-20 flex items-center justify-center rounded-lg bg-white">
+                <div class="mx-auto w-full">
+                  <div class="text-left">
+                    <!-- <p class="text-lg font-medium leading-8 text-indigo-600/95">Introducing an Asset Marketplace</p> -->
+                    <h1 class="mt-1 mx-5 text-[3.5rem] font-bold leading-[4rem] tracking-tight text-black">Hello, {$userMail}</h1>
+                    <p class="mt-3 mx-5 text-lg leading-relaxed text-slate-400">Welcome to AssetHub, your secure online marketplace for buying and selling assets using cryptocurrency seamlessly bridging traditional and digital markets.</p>
+                  </div>
+                  <div class="mt-6 flex items-center justify-center gap-4">
+                    <a href="#" class="transform rounded-md bg-indigo-600/95 px-5 py-3 font-medium text-white transition-colors hover:bg-indigo-700">Browse Assets</a>
+                    <a href="#" class="transform rounded-md border border-slate-200 px-7 py-3 font-medium text-slate-900 transition-colors hover:bg-slate-50"> List Assets </a>
+                  </div>
+                </div>
+              </section>
+
+              <div class="py-2 w-full h-auto">
+                <div class="flex flex-col w-full h-full rounded-lg bg-slate-200">
+                    <div class="flex rounded-lg py-1.5 justify-Left w-full h-10 bg-gray-100">
+                        <p class="mx-3 text-bold text-lg leading-relaxed text-slate-800">Your Cart Items:</p>
+                    </div>
+                    <div class="overflow-x-auto">
+                        {#if cartItems}
+                        <table class="min-w-full rounded-lg bg-white">
+                          <thead>
+                            <tr>
+                              <th class="py-2 px-4 border-b">Asset ID</th>
+                              <th class="py-2 px-4 border-b">Asset Name</th>
+                              <th class="py-2 px-4 border-b">Price</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {#each cartItems as item}
+                              <tr>
+                                <td class="py-2 px-4 border-b">{item.assetId}</td>
+                                <td class="py-2 px-4 border-b">{item.assetName}</td>
+                                <td class="py-2 px-4 border-b">${item.price}</td>
+                              </tr>
+                            {/each}
+                          </tbody>
+                          <tfoot>
+                            <tr>
+                              <td colspan="2" class="py-2 px-4 border-t font-bold">Total Price</td>
+                              <td class="py-2 px-4 border-t font-bold">${totalPrice}</td>
+                            </tr>
+                          </tfoot>
+                        </table>
+                        {:else}
+                        <div class="flex rounded-lg py-1.5 justify-Left w-full h-10 bg-gray-100">
+                            <p class="mx-3 text-bold text-lg leading-relaxed text-slate-800">Looks like your cart is empty!</p>
+                        </div>
+                        {/if}
+                      </div>
                 </div>
             </div>
-        </div>
-        <div class="py-2 px-3 w-1/2 h-1/2">
-            <div class="flex justify-center w-full h-full rounded-lg bg-slate-200">
-                <div class="flex justify-center w-full h-10 bg-gray-100">
-                    <h1>Your Cart Items</h1>
-                </div>
-            </div>
-        </div>
-        <div class="py-2 px-3 w-1/2 h-1/2">
-            <div class="flex justify-center w-full h-full rounded-lg bg-slate-200">
-                <div class="flex justify-center w-full h-10 bg-gray-100">
-                    <h1>Your Asset Listing</h1>
-                </div>
-            </div>
-        </div>
+              </div>
+        
 
     </div>
 
 
  </div>
 </div>
+
+<style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+    th {
+      background-color: #f9f9f9;
+    }
+  </style>
