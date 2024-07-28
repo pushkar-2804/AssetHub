@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
+import { UpdateCartDto } from './dto/update-cart.dto';
 
 @Injectable()
 export class CartService {
@@ -57,6 +58,58 @@ export class CartService {
     });
 
     return { cartId: cart.id, status: 'Asset added to cart' };
+  }
+
+  async updateCart(updateCartDto: UpdateCartDto) {
+    const { userId, cartId, quantity } = updateCartDto;
+
+    if (!userId || !cartId) {
+      throw new BadRequestException('User ID and Cart ID are required.');
+    }
+
+    if (quantity < 0) {
+      throw new BadRequestException("quantity can't be less than 0");
+    }
+
+    const cart = await this.database.cart.findFirst({ where: { userId } });
+    if (!cart) {
+      throw new NotFoundException('Cart not found.');
+    }
+
+    const cartItem = await this.database.cartItem.findFirst({
+      where: { id: cartId },
+    });
+    if (!cartItem) {
+      throw new NotFoundException('Asset not found in cart.');
+    }
+
+    if (quantity === 0) {
+      await this.database.cartItem.delete({ where: { id: cartItem.id } });
+    } else {
+      await this.database.cartItem.update({
+        where: { id: cartId },
+        data: { quantity },
+      });
+    }
+
+    const updatedTotalPrice = await this.calculateTotalPrice(cart.id);
+    await this.database.cart.update({
+      where: { id: cart.id },
+      data: { totalPrice: updatedTotalPrice },
+    });
+
+    return { cartId: cart.id, status: 'Cart updated successfully' };
+  }
+
+  private async calculateTotalPrice(cartId: number): Promise<number> {
+    const cartItems = await this.database.cartItem.findMany({
+      where: { cartId },
+      include: { asset: true },
+    });
+    const totalPrice = cartItems.reduce((total, item) => {
+      return total + item.asset.price * item.quantity;
+    }, 0);
+    return totalPrice;
   }
 
   async viewCart(userId: number) {

@@ -5,6 +5,7 @@ import {
   HttpException,
   HttpStatus,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -19,6 +20,7 @@ import { CartService } from './cart.service';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { CheckoutCartDto } from './dto/checkout-cart.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { UpdateCartDto } from './dto/update-cart.dto';
 
 @ApiTags('cart')
 @Controller('cart')
@@ -80,6 +82,25 @@ export class CartController {
     } catch (error) {
       throw new HttpException(
         'An error occurred while retrieving cart items',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Patch('update')
+  @ApiOperation({ summary: 'Update cart' })
+  @ApiResponse({ status: 200, description: 'Cart updated successfully.' })
+  @ApiResponse({ status: 400, description: 'Bad request.' })
+  @ApiResponse({ status: 404, description: 'Cart or Asset not found.' })
+  async updateCart(@Body() updateCartDto: UpdateCartDto) {
+    try {
+      return await this.cartService.updateCart(updateCartDto);
+    } catch (error) {
+      if (error.response?.statusCode === HttpStatus.NOT_FOUND) {
+        throw new HttpException(error.response.message, HttpStatus.NOT_FOUND);
+      }
+      throw new HttpException(
+        'An error occurred while updating the cart',
         HttpStatus.BAD_REQUEST,
       );
     }
