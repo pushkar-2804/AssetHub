@@ -2,13 +2,13 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsOptional, Min } from 'class-validator';
 
 export class UpdateCartDto {
-  @ApiProperty({ example: 1, description: 'Asset ID' })
+  @ApiProperty({ example: 1, description: 'Cart Item ID' })
   @IsInt()
-  cartId: number;
+  cartItemId: number;
 
   @ApiProperty({
     example: 2,
-    description: 'Quantity of the asset in the cart',
+    description: 'Quantity of the item in the cart',
     required: false,
   })
   @IsOptional()

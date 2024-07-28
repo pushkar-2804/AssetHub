@@ -88,7 +88,7 @@ export class CartController {
   @ApiOperation({ summary: 'Update cart' })
   @ApiResponse({ status: 200, description: 'Cart updated successfully.' })
   @ApiResponse({ status: 400, description: 'Bad request.' })
-  @ApiResponse({ status: 404, description: 'Cart or Asset not found.' })
+  @ApiResponse({ status: 404, description: 'Cart or cart item not found.' })
   async updateCart(@Req() req, @Body() updateCartDto: UpdateCartDto) {
     try {
       return await this.cartService.updateCart(+req.user.userId, updateCartDto);
