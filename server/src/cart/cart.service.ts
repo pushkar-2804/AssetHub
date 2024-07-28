@@ -63,10 +63,10 @@ export class CartService {
   }
 
   async updateCart(userId: number, updateCartDto: UpdateCartDto) {
-    const { cartId, quantity } = updateCartDto;
+    const { cartItemId, quantity } = updateCartDto;
 
-    if (!userId || !cartId) {
-      throw new BadRequestException('User ID and Cart ID are required.');
+    if (!cartItemId) {
+      throw new BadRequestException(' Cart ID are required.');
     }
 
     if (quantity < 0) {
@@ -79,17 +79,17 @@ export class CartService {
     }
 
     const cartItem = await this.database.cartItem.findFirst({
-      where: { id: cartId },
+      where: { id: cartItemId },
     });
     if (!cartItem) {
-      throw new NotFoundException('Asset not found in cart.');
+      throw new NotFoundException('Item not found in cart.');
     }
 
     if (quantity === 0) {
-      await this.database.cartItem.delete({ where: { id: cartItem.id } });
+      await this.database.cartItem.delete({ where: { id: cartItemId } });
     } else {
       await this.database.cartItem.update({
-        where: { id: cartId },
+        where: { id: cartItemId },
         data: { quantity },
       });
     }
