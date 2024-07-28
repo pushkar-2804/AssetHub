@@ -128,9 +128,9 @@
 
 
 <div class="flex flex-row">
-<aside class="min-h-screen grow bg-gray-100">
-    <div class="sidebar min-h-screen overflow-hidden border-r w-56 hover:bg-white hover:shadow-lg">
-      <div class="flex h-screen flex-col justify-between pt-2 pb-6">
+<aside class="grow bg-gray-100">
+    <div class="sidebar h-full overflow-hidden border-r w-56 hover:bg-white hover:shadow-lg">
+      <div class="flex h-full flex-col justify-between pt-2 pb-6">
         <div>
             <div class="w-max p-3">
                 <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
@@ -140,7 +140,7 @@
               </div>
           <ul class="mt-6 space-y-2 tracking-wide">
             <li class="min-w-max">
-              <a href="#" aria-label="dashboard" class="relative flex items-center space-x-4 bg-gradient-to-r from-blue-700 to-sky-600 px-4 py-3 text-white">
+              <a href="#" aria-label="dashboard" class="relative flex items-center space-x-4 bg-gradient-to-r from-gray-600 to-slate-300 px-4 py-3 text-white">
                 <span class="-mr-1 font-medium">Dashboard</span>
               </a>
             </li>
@@ -183,12 +183,12 @@
            
           </ul>
         </div>
-        <div class="w-max -mb-3">
+        <footer class="w-max -mb-3">
           <button on:click={handleLogout} class="group flex items-center space-x-4 rounded-md px-4 py-3 text-gray-600">
             <img src="./logout.svg" class="h-5 w-5 group-hover:fill-cyan-600" alt="logout" />
             <span class="group-hover:text-gray-700">Sign out</span>
           </button>
-        </div>
+        </footer>
       </div>
     </div>
 </aside>
@@ -200,9 +200,9 @@
 
 
 
- <div class="flex flex-col w-full bg-white border-gray-200 dark:bg-gray-900">
+ <div class="flex flex-col w-full bg-white dark:bg-gray-900">
     <div class="flex">
-      <div class="flex flex-row w-full font-medium justify-end p-6 border border-gray-100 bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
+      <div class="flex flex-row w-full font-medium justify-end p-6  bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
         <div class="py-2 px-3">
           <a href="/" class="mx-1.5 py-2 px-3 md:p-0 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:dark:text-blue-500" aria-current="page">Home</a>
         </div>
@@ -213,13 +213,13 @@
           <a href="#" class="mx-1.5 py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Browse Assets</a>
         </div>
         <div class="py-2 px-3">
-          <a href="#" class="mx-1.5 py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">View Cart</a>
+          <a href="/cart" class="mx-1.5 py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">View Cart</a>
         </div>
     </div>
     </div>
 
 
-    <div class="flex flex-wrap grow font-medium w-full h-full bg-gradient-to-r from-blue-700 to-sky-600">
+    <div class="flex flex-wrap grow font-medium w-full rounded-xl p-1 h-screen bg-gradient-to-r from-blue-700 to-sky-600">
         <div class="flex flex-row flex-wrap justify-center py-2 px-3 rounded-lg w-full h-1/2">
             <section class="py-20 flex items-center justify-center rounded-lg bg-white">
                 <div class="mx-auto w-full">
@@ -235,13 +235,13 @@
                 </div>
               </section>
 
-              <div class="py-2 w-full h-auto">
-                <div class="flex flex-col w-full h-full rounded-lg bg-slate-200">
-                    <div class="flex rounded-lg py-1.5 justify-Left w-full h-10 bg-gray-100">
-                        <p class="mx-3 text-bold text-lg leading-relaxed text-slate-800">Your Cart Items:</p>
+              <div class="py-2 w-full h-full">
+                <div class="flex flex-col w-full h-full rounded-lg bg-white">
+                    <div class="flex rounded-lg py-1.5 justify-Left w-full h-10">
+                        <p class="mx-3 text-bold font-medium text-xl leading-relaxed text-slate-800">Your Cart Items:</p>
                     </div>
-                    <div class="overflow-x-auto">
-                        {#if cartItems}
+                    <div class="overflow-x-auto bg-white">
+                        {#if totalPrice= 0}
                         <table class="min-w-full rounded-lg bg-white">
                           <thead>
                             <tr>
@@ -267,9 +267,10 @@
                           </tfoot>
                         </table>
                         {:else}
-                        <div class="flex rounded-lg py-1.5 justify-Left w-full h-10 bg-gray-100">
-                            <p class="mx-3 text-bold text-lg leading-relaxed text-slate-800">Looks like your cart is empty!</p>
+                        <div class="flex rounded-lg py-1.5 justify-center w-full h-10 mt-20">
+                            <p class="mx-3 text-bold text-lg leading-relaxed text-slate-800">Looks like your cart is empty!  <a href="#" class="text-blue-500">Click Here</a> to check out our store</p>
                         </div>
+                        
                         {/if}
                       </div>
                 </div>
