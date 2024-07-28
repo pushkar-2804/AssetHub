@@ -43,14 +43,18 @@ export class CartController {
   @ApiBearerAuth()
   async addToCart(@Body() addToCartDto: CreateCartDto) {
     try {
+      const quantity = addToCartDto?.quantity || 1;
       return await this.cartService.addToCart(
         addToCartDto.userId,
         addToCartDto.assetId,
+        quantity,
       );
     } catch (error) {
       if (error.response?.statusCode === HttpStatus.NOT_FOUND) {
         throw new HttpException(error.response.message, HttpStatus.NOT_FOUND);
-      }
+      } else if (error.response?.statusCode === HttpStatus.BAD_REQUEST)
+        throw new HttpException(error.response.message, HttpStatus.BAD_REQUEST);
+
       throw new HttpException(
         'An error occurred while adding asset to cart',
         HttpStatus.BAD_REQUEST,

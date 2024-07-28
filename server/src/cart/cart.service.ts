@@ -9,17 +9,29 @@ import { DatabaseService } from 'src/database/database.service';
 export class CartService {
   constructor(private database: DatabaseService) {}
 
-  async addToCart(userId: number, assetId: number) {
+  async addToCart(userId: number, assetId: number, quantity: number) {
     if (!userId || !assetId) {
       throw new BadRequestException('User ID and Asset ID are required.');
     }
     // if cart exists
-    let cart = await this.database.cart.findFirst({ where: { userId } });
+    let cart = await this.database.cart.findFirst({
+      where: { userId },
+      include: { cartItems: { include: { asset: true } } },
+    });
     // if not then create one
     if (!cart) {
       cart = await this.database.cart.create({
         data: { userId, totalPrice: 0 },
+        include: { cartItems: { include: { asset: true } } },
       });
+    }
+    if (cart) {
+      const alreadyExistInCart = cart.cartItems.filter(
+        (item) => item.asset.assetId == assetId,
+      );
+      if (alreadyExistInCart) {
+        throw new BadRequestException('Asset already present');
+      }
     }
 
     // find asset
@@ -35,12 +47,13 @@ export class CartService {
       data: {
         cartId: cart.id,
         assetId: asset.assetId,
+        quantity,
       },
     });
     // update the cart
     await this.database.cart.update({
       where: { id: cart.id },
-      data: { totalPrice: cart.totalPrice + asset.price },
+      data: { totalPrice: cart.totalPrice + asset.price * quantity },
     });
 
     return { cartId: cart.id, status: 'Asset added to cart' };
@@ -64,6 +77,7 @@ export class CartService {
       assetId: item.asset.assetId,
       assetName: item.asset.assetName,
       price: item.asset.price,
+      quantity: item.quantity,
     }));
 
     return { totalPrice: cart.totalPrice, cartItems };
