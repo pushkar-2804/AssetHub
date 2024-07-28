@@ -11,9 +11,10 @@ export class CartService {
   constructor(private database: DatabaseService) {}
 
   async addToCart(userId: number, assetId: number, quantity: number) {
-    if (!userId || !assetId) {
+    if (!assetId) {
       throw new BadRequestException('User ID and Asset ID are required.');
     }
+
     // if cart exists
     let cart = await this.database.cart.findFirst({
       where: { userId },
@@ -30,7 +31,8 @@ export class CartService {
       const alreadyExistInCart = cart.cartItems.filter(
         (item) => item.asset.assetId == assetId,
       );
-      if (alreadyExistInCart) {
+
+      if (alreadyExistInCart.length) {
         throw new BadRequestException('Asset already present');
       }
     }
@@ -60,8 +62,8 @@ export class CartService {
     return { cartId: cart.id, status: 'Asset added to cart' };
   }
 
-  async updateCart(updateCartDto: UpdateCartDto) {
-    const { userId, cartId, quantity } = updateCartDto;
+  async updateCart(userId: number, updateCartDto: UpdateCartDto) {
+    const { cartId, quantity } = updateCartDto;
 
     if (!userId || !cartId) {
       throw new BadRequestException('User ID and Cart ID are required.');

@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -36,18 +37,18 @@ export class CartController {
   })
   @ApiResponse({
     status: 400,
-    description: 'Bad request. User ID or Asset ID missing.',
+    description: 'Bad request. Asset ID missing.',
   })
   @ApiResponse({
     status: 404,
     description: 'Asset not found.',
   })
   @ApiBearerAuth()
-  async addToCart(@Body() addToCartDto: CreateCartDto) {
+  async addToCart(@Req() req, @Body() addToCartDto: CreateCartDto) {
     try {
       const quantity = addToCartDto?.quantity || 1;
       return await this.cartService.addToCart(
-        addToCartDto.userId,
+        req.user.userId,
         addToCartDto.assetId,
         quantity,
       );
@@ -71,14 +72,10 @@ export class CartController {
     status: 200,
     description: 'Cart items retrieved successfully.',
   })
-  @ApiResponse({
-    status: 400,
-    description: 'Bad request. User ID missing.',
-  })
   @ApiBearerAuth()
-  async viewCart(@Query('userId', ParseIntPipe) userId: number) {
+  async viewCart(@Req() req) {
     try {
-      return await this.cartService.viewCart(userId);
+      return await this.cartService.viewCart(+req.user.userId);
     } catch (error) {
       throw new HttpException(
         'An error occurred while retrieving cart items',
@@ -92,9 +89,9 @@ export class CartController {
   @ApiResponse({ status: 200, description: 'Cart updated successfully.' })
   @ApiResponse({ status: 400, description: 'Bad request.' })
   @ApiResponse({ status: 404, description: 'Cart or Asset not found.' })
-  async updateCart(@Body() updateCartDto: UpdateCartDto) {
+  async updateCart(@Req() req, @Body() updateCartDto: UpdateCartDto) {
     try {
-      return await this.cartService.updateCart(updateCartDto);
+      return await this.cartService.updateCart(+req.user.userId, updateCartDto);
     } catch (error) {
       if (error.response?.statusCode === HttpStatus.NOT_FOUND) {
         throw new HttpException(error.response.message, HttpStatus.NOT_FOUND);
@@ -115,17 +112,17 @@ export class CartController {
   })
   @ApiResponse({
     status: 400,
-    description: 'Bad request. User ID or Cart ID missing.',
+    description: 'Bad request. Cart ID missing.',
   })
   @ApiResponse({
     status: 404,
     description: 'Cart not found or already checked out.',
   })
   @ApiBearerAuth()
-  async checkout(@Body() checkoutDto: CheckoutCartDto) {
+  async checkout(@Req() req, @Body() checkoutDto: CheckoutCartDto) {
     try {
       return await this.cartService.checkout(
-        checkoutDto.userId,
+        +req.user.userId,
         checkoutDto.cartId,
       );
     } catch (error) {
