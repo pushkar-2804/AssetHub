@@ -19,25 +19,41 @@
     }
   }
 
-  async function getUserProfile() {
-    try {
-      const response = await fetch('http://localhost:3000/users/profile', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      if (response.ok) {
-        const userMailData = await response.json();
-        userMail.set(userMailData.email);
-      } else {
-        errorMessage.set('Failed to fetch user details. Please log in again.');
-      }
-    } catch (error) {
-      errorMessage.set('An error occurred. Please try again.');
+  function handleLogout(){
+      localStorage.removeItem('token');
+      window.location.href = '/';
+      dispatch('logout');
     }
+
+  async function getUserProfile() {
+
+    checkAuthToken();
+
+    if (!token) {
+      isAuthenticated.set(false);
+      window.location.href = '/login';
+    } else {
+      isAuthenticated.set(true);
+    }
+
+  try {
+    const response = await fetch('http://localhost:3000/users/profile', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    if (response.ok) {
+      const userMailData = await response.json();
+      userMail.set(userMailData.email);
+    } else {
+      errorMessage.set('Failed to fetch user details. Please log in again.');
+    }
+  } catch (error) {
+    errorMessage.set('An error occurred. Please try again.');
   }
+}
 
   async function fetchUserCart() {
     checkAuthToken();
@@ -87,6 +103,8 @@
 
       const data = await response.json();
       console.log('Update successful', data);
+
+      window.location.reload();
 
       // Update the local cartItems array
       const itemIndex = cartItems.findIndex(item => item.cartItemId === cartItemId);
@@ -188,7 +206,7 @@
 <div class="py-5 w-4/5">
     <div class="flex flex-col w-full rounded-lg align-middle bg-white">
         <div class="flex rounded-lg py-1.5 justify-Left w-full">
-            <p class="mt-1 mx-5 text-[2.5rem] font-bold leading-[4rem] tracking-tight text-black">Your Cart Items:</p>
+            <p class="mt-1 mb-4 mx-5 text-[2.5rem] font-bold leading-[4rem] tracking-tight text-black">Your Cart Items:</p>
         </div>
         <div class="overflow-x-auto">
             {#if totalPrice!=0}
@@ -204,8 +222,8 @@
               <tbody>
                 {#each cartItems as item}
                   <tr>
-                    <td class="py-2 px-4 border-b">{item.assetId}</td>
-                    <td class="py-2 px-4 border-b">{item.assetName}</td>
+                    <td class="py-2 px-4 border-b"><div class="flex justify-center">{item.assetId}</div></td>
+                    <td class="py-2 px-4 border-b"><div class="flex justify-center">{item.assetName}</div></td>
                     <td class="py-2 px-4 border-b">
                       {#if $editingItem && $editingItem.cartItemId === item.cartItemId}
                       <div class="flex justify-center">
@@ -221,21 +239,22 @@
                       </button>
                     </div>
                       {/if}
-                    
                     </td>
-                    <td class="py-2 px-4 border-b">${item.price}</td>
+                    <td class="py-2 px-4 border-b"><div class="flex justify-center">${item.price}</div></td>
                   </tr>
                 {/each}
               </tbody>
               <tfoot>
                 <tr>
-                  <td colspan="3" class="py-2 px-4 border-t font-bold">Total Price</td>
-                  <td class="py-2 px-4 border-t font-bold">${totalPrice}</td>
+                  <td  class="py-8 px-4 border-t font-bold"><div class="flex justify-center">Total Price:</div></td>
+                  <td  class="py-8 px-4 border-t font-bold"></td>
+                  <td  class="py-8 px-4 border-t font-bold"></td>
+                  <td  class="py-8 px-4 border-t font-bold"><div class="flex justify-center">${totalPrice}</div></td>
                 </tr>
               </tfoot>
             </table>
             <footer class="p-8">
-                <div class="mt-6 flex items-center justify-center gap-4">
+                <div class="mt-4 flex items-center justify-center gap-4">
                     <a href="#" class="transform rounded-md bg-indigo-600/95 px-5 py-3 font-medium text-white transition-colors hover:bg-indigo-700">Checkout</a>
                   </div>
             </footer>
@@ -244,7 +263,7 @@
                 <p class="mx-3 text-bold text-lg leading-relaxed text-slate-800">Looks like your cart is empty!</p>
             </div>
             <footer class="p-8">
-                <div class="mt-6 flex items-center justify-center gap-4">
+                <div class="mt-4 flex items-center justify-center gap-4">
                     <a href="#" class="transform rounded-md bg-indigo-600/95 px-5 py-3 font-medium text-white transition-colors hover:bg-indigo-700">Click here to Browse Assets</a>
                   </div>
             </footer>
