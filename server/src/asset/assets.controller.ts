@@ -10,6 +10,7 @@ import {
   UploadedFiles,
   BadRequestException,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { AssetService } from './asset.service';
 import { CreateAssetDto } from './dto/create-asset.dto';
@@ -38,6 +39,7 @@ export class AssetsController {
   @UseInterceptors(FilesInterceptor('images', 10, { storage }))
   @ApiBearerAuth()
   async create(
+    @Req() req,
     @Body() createAssetDto: CreateAssetDto,
     @UploadedFiles() files: Express.Multer.File[],
   ) {
@@ -47,8 +49,8 @@ export class AssetsController {
     const imagePaths = files.map((file) => file.path);
     createAssetDto.images = imagePaths;
     createAssetDto.price = Number(createAssetDto.price);
-    createAssetDto.userId = Number(createAssetDto.userId);
-    return this.assetsService.create(createAssetDto);
+    const userId = Number(req.user.userId);
+    return this.assetsService.create(userId, createAssetDto);
   }
 
   @UseGuards(JwtAuthGuard)

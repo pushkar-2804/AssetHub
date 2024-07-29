@@ -64,6 +64,7 @@ model CartItem {
   cartId  Int
   asset   Asset @relation(fields: [assetId], references: [assetId])
   assetId Int
+  quantity Int @default(1)
 }
 
 model Purchases {
