@@ -1,105 +1,56 @@
 <script>
-    import { createEventDispatcher, onMount } from "svelte";
-    import {writable} from 'svelte/store';
-    import Footer  from '$lib/Footer.svelte';
+  import { createEventDispatcher, onMount } from "svelte";
+  import { writable, get } from 'svelte/store';
+  import Footer from '$lib/Footer.svelte';
 
-    function handleLogout() {
-        const dispatch = createEventDispatcher();
-        // Remove JWT token from local storage
-      localStorage.removeItem('token');
-      
-      // Redirect to the home page
-      window.location.href = '/';
-        dispatch('logout');
-  }
+  let cartItems = [];
+  let totalPrice = 0;
+  let token;
+  let dispatch = createEventDispatcher();
 
   const errorMessage = writable('');
-    const isAuthenticated = writable(false);
-    const userMail = writable('');
-    let userId = '';
-    let cartItems = [];
-    let totalPrice = 0;
+  const isAuthenticated = writable(false);
+  const userMail = writable('');
+  const editingItem = writable(null); // Store for editing item
 
-    let token;
-    let dispatch = createEventDispatcher();
-    let data;
-
-    function checkAuthToken() {
+  function checkAuthToken() {
     if (typeof window !== 'undefined') {
       token = localStorage.getItem('token');
     }
   }
 
-
-    async function fetchUserDetails() {
-
-    checkAuthToken();
-
-    if (!token) {
-      isAuthenticated.set(false);
-      window.location.href = '/login';
-      // return;
-    }
-    else {
-        isAuthenticated.set(true);
-        // return;
-    }
-
+  async function getUserProfile() {
     try {
-      const response = await fetch('http://localhost:3000/auth/profile', {
+      const response = await fetch('http://localhost:3000/users/profile', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
-
       if (response.ok) {
-        data = await response.json();
-        console.log(data);
-        userId = data.userId;
-        // isAuthenticated.set(true);
-      } else {
-        // isAuthenticated.set(false);
-        errorMessage.set('Failed to fetch user details. Please log in again.');
-      }
-    } catch (error) {
-      // isAuthenticated.set(false);
-      errorMessage.set('An error occurred. Please try again.');
-    }
-
-    try{
-      const response = await fetch('http://localhost:3000/users/profile', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          userId: data.userId
-        })
-      });
-      if (response.ok){
         const userMailData = await response.json();
-        console.log(userMail);
         userMail.set(userMailData.email);
-        // isAuthenticated.set(true);
       } else {
-        // isAuthenticated.set(false);
         errorMessage.set('Failed to fetch user details. Please log in again.');
       }
     } catch (error) {
-      // isAuthenticated.set(false);
       errorMessage.set('An error occurred. Please try again.');
     }
-
-    fetchUserCart();
-
   }
 
-  async function fetchUserCart(){
+  async function fetchUserCart() {
+    checkAuthToken();
+
+    if (!token) {
+      isAuthenticated.set(false);
+      window.location.href = '/login';
+    } else {
+      isAuthenticated.set(true);
+    }
+
     try {
-      const response = await fetch(`http://localhost:3000/cart/view?userId=${userId}`, {
+      const response = await fetch('http://localhost:3000/cart/view', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -119,12 +70,53 @@
     }
   }
 
+  async function updateCartItem(cartItemId, quantity) {
+    try {
+      const response = await fetch('http://localhost:3000/cart/update', {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ cartItemId, quantity })
+      });
 
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log('Update successful', data);
+
+      // Update the local cartItems array
+      const itemIndex = cartItems.findIndex(item => item.cartItemId === cartItemId);
+      if (itemIndex !== -1) {
+        cartItems[itemIndex].quantity = quantity;
+      }
+    } catch (error) {
+      console.error('Error updating cart item:', error);
+    }
+  }
+
+  function startEditing(item) {
+    editingItem.set({ ...item });
+  }
+
+  function cancelEditing() {
+    editingItem.set(null);
+  }
+
+  async function saveEditing() {
+    const editedItem = get(editingItem);
+    await updateCartItem(editedItem.cartItemId, editedItem.quantity);
+    editingItem.set(null);
+  }
 
   onMount(() => {
-    fetchUserDetails();
+    getUserProfile();
+    fetchUserCart();
   });
-  </script>
+</script>
 
 <div class="grow h-screen bg-gray-100">
 <nav class="bg-white border-gray-200 dark:bg-gray-900">
@@ -199,12 +191,13 @@
             <p class="mt-1 mx-5 text-[2.5rem] font-bold leading-[4rem] tracking-tight text-black">Your Cart Items:</p>
         </div>
         <div class="overflow-x-auto">
-            {#if totalPrice=0}
+            {#if totalPrice!=0}
             <table class="min-w-full rounded-lg">
               <thead>
                 <tr>
                   <th class="py-2 px-4 border-b">Asset ID</th>
                   <th class="py-2 px-4 border-b">Asset Name</th>
+                  <th class="py-2 px-4 border-b">Quantity</th>
                   <th class="py-2 px-4 border-b">Price</th>
                 </tr>
               </thead>
@@ -213,13 +206,30 @@
                   <tr>
                     <td class="py-2 px-4 border-b">{item.assetId}</td>
                     <td class="py-2 px-4 border-b">{item.assetName}</td>
+                    <td class="py-2 px-4 border-b">
+                      {#if $editingItem && $editingItem.cartItemId === item.cartItemId}
+                      <div class="flex justify-center">
+                      <input type="number" min="1" bind:value={$editingItem.quantity} class="border rounded px-2 py-1" />
+                      <button on:click={saveEditing} class="ml-2 text-blue-500">Save</button>
+                      <button on:click={cancelEditing} class="ml-2 text-red-500">Cancel</button>
+                    </div>
+                      {:else}
+                      <div class="flex justify-center">
+                      {item.quantity}
+                      <button on:click={() => startEditing(item)} class="ml-2">
+                        <img class="w-7 inline hover:bg-gray-200 rounded-md p-1" src="./edit-icon.svg" alt="update" />
+                      </button>
+                    </div>
+                      {/if}
+                    
+                    </td>
                     <td class="py-2 px-4 border-b">${item.price}</td>
                   </tr>
                 {/each}
               </tbody>
               <tfoot>
                 <tr>
-                  <td colspan="2" class="py-2 px-4 border-t font-bold">Total Price</td>
+                  <td colspan="3" class="py-2 px-4 border-t font-bold">Total Price</td>
                   <td class="py-2 px-4 border-t font-bold">${totalPrice}</td>
                 </tr>
               </tfoot>

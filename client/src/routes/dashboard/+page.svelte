@@ -98,7 +98,7 @@
 
   async function fetchUserCart(){
     try {
-      const response = await fetch(`http://localhost:3000/cart/view?userId=${userId}`, {
+      const response = await fetch(`http://localhost:3000/cart/view`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -247,6 +247,7 @@
                             <tr>
                               <th class="py-2 px-4 border-b">Asset ID</th>
                               <th class="py-2 px-4 border-b">Asset Name</th>
+                              <th class="py-2 px-4 border-b">Quantity</th>
                               <th class="py-2 px-4 border-b">Price</th>
                             </tr>
                           </thead>
@@ -255,6 +256,7 @@
                               <tr>
                                 <td class="py-2 px-4 border-b">{item.assetId}</td>
                                 <td class="py-2 px-4 border-b">{item.assetName}</td>
+                                <td class="py-2 px-4 border-b">{item.quantity}</td>
                                 <td class="py-2 px-4 border-b">${item.price}</td>
                               </tr>
                             {/each}

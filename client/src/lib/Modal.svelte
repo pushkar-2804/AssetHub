@@ -19,8 +19,8 @@
 		<slot />
 		<hr />
 		<!-- svelte-ignore a11y-autofocus -->
-		<button class="mt-3 bg-indigo-500 text-white px-4 py-1 rounded-md" type="submit" >Add to Cart</button>
-		<button class="mt-3 bg-indigo-500 text-white px-4 py-1 rounded-md" autofocus on:click={() => dialog.close()}>close modal</button>
+		<div class="flex flex-row-reverse"><button class="button1 mt-3 bg-indigo-500 text-white px-2 py-0.5 rounded-full" autofocus on:click={() => dialog.close()}>Cancel</button>
+		</div>
 	</div>
 </dialog>
 
@@ -62,4 +62,15 @@
 	button {
 		display: block;
 	}
+
+	.button1 {
+  background-color: white; 
+  color: #0003c3cb; 
+  border: 2px solid #6366f1;
+}
+
+.button1:hover {
+  background-color: #6366f1;
+  color: white;
+}
 </style>
