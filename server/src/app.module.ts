@@ -4,10 +4,9 @@ import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './database/database.module';
-import { AssetService } from './asset/asset.service';
 import { AssetModule } from './asset/asset.module';
-import { CartService } from './cart/cart.service';
 import { CartModule } from './cart/cart.module';
+import { WalletModule } from './wallet/wallet.module';
 
 @Module({
   imports: [
@@ -17,6 +16,7 @@ import { CartModule } from './cart/cart.module';
     CartModule,
     DatabaseModule,
     UsersModule,
+    WalletModule,
   ],
   providers: [],
 })

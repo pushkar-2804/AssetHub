@@ -84,17 +84,21 @@ export class CartController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch('update')
   @ApiOperation({ summary: 'Update cart' })
   @ApiResponse({ status: 200, description: 'Cart updated successfully.' })
   @ApiResponse({ status: 400, description: 'Bad request.' })
   @ApiResponse({ status: 404, description: 'Cart or cart item not found.' })
+  @ApiBearerAuth()
   async updateCart(@Req() req, @Body() updateCartDto: UpdateCartDto) {
     try {
       return await this.cartService.updateCart(+req.user.userId, updateCartDto);
     } catch (error) {
       if (error.response?.statusCode === HttpStatus.NOT_FOUND) {
         throw new HttpException(error.response.message, HttpStatus.NOT_FOUND);
+      } else if (error.response?.statusCode === HttpStatus.BAD_REQUEST) {
+        throw new HttpException(error.response.message, HttpStatus.BAD_REQUEST);
       }
       throw new HttpException(
         'An error occurred while updating the cart',
