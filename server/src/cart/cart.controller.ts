@@ -5,8 +5,10 @@ import {
   HttpException,
   HttpStatus,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -19,6 +21,7 @@ import { CartService } from './cart.service';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { CheckoutCartDto } from './dto/checkout-cart.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { UpdateCartDto } from './dto/update-cart.dto';
 
 @ApiTags('cart')
 @Controller('cart')
@@ -34,23 +37,27 @@ export class CartController {
   })
   @ApiResponse({
     status: 400,
-    description: 'Bad request. User ID or Asset ID missing.',
+    description: 'Bad request. Asset ID missing.',
   })
   @ApiResponse({
     status: 404,
     description: 'Asset not found.',
   })
   @ApiBearerAuth()
-  async addToCart(@Body() addToCartDto: CreateCartDto) {
+  async addToCart(@Req() req, @Body() addToCartDto: CreateCartDto) {
     try {
+      const quantity = addToCartDto?.quantity || 1;
       return await this.cartService.addToCart(
-        addToCartDto.userId,
+        req.user.userId,
         addToCartDto.assetId,
+        quantity,
       );
     } catch (error) {
       if (error.response?.statusCode === HttpStatus.NOT_FOUND) {
         throw new HttpException(error.response.message, HttpStatus.NOT_FOUND);
-      }
+      } else if (error.response?.statusCode === HttpStatus.BAD_REQUEST)
+        throw new HttpException(error.response.message, HttpStatus.BAD_REQUEST);
+
       throw new HttpException(
         'An error occurred while adding asset to cart',
         HttpStatus.BAD_REQUEST,
@@ -65,17 +72,36 @@ export class CartController {
     status: 200,
     description: 'Cart items retrieved successfully.',
   })
-  @ApiResponse({
-    status: 400,
-    description: 'Bad request. User ID missing.',
-  })
   @ApiBearerAuth()
-  async viewCart(@Query('userId', ParseIntPipe) userId: number) {
+  async viewCart(@Req() req) {
     try {
-      return await this.cartService.viewCart(userId);
+      return await this.cartService.viewCart(+req.user.userId);
     } catch (error) {
       throw new HttpException(
         'An error occurred while retrieving cart items',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('update')
+  @ApiOperation({ summary: 'Update cart' })
+  @ApiResponse({ status: 200, description: 'Cart updated successfully.' })
+  @ApiResponse({ status: 400, description: 'Bad request.' })
+  @ApiResponse({ status: 404, description: 'Cart or cart item not found.' })
+  @ApiBearerAuth()
+  async updateCart(@Req() req, @Body() updateCartDto: UpdateCartDto) {
+    try {
+      return await this.cartService.updateCart(+req.user.userId, updateCartDto);
+    } catch (error) {
+      if (error.response?.statusCode === HttpStatus.NOT_FOUND) {
+        throw new HttpException(error.response.message, HttpStatus.NOT_FOUND);
+      } else if (error.response?.statusCode === HttpStatus.BAD_REQUEST) {
+        throw new HttpException(error.response.message, HttpStatus.BAD_REQUEST);
+      }
+      throw new HttpException(
+        'An error occurred while updating the cart',
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -90,17 +116,17 @@ export class CartController {
   })
   @ApiResponse({
     status: 400,
-    description: 'Bad request. User ID or Cart ID missing.',
+    description: 'Bad request. Cart ID missing.',
   })
   @ApiResponse({
     status: 404,
     description: 'Cart not found or already checked out.',
   })
   @ApiBearerAuth()
-  async checkout(@Body() checkoutDto: CheckoutCartDto) {
+  async checkout(@Req() req, @Body() checkoutDto: CheckoutCartDto) {
     try {
       return await this.cartService.checkout(
-        checkoutDto.userId,
+        +req.user.userId,
         checkoutDto.cartId,
       );
     } catch (error) {

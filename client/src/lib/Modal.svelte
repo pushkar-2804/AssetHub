@@ -54,6 +54,17 @@
 	button {
 		display: block;
 	}
+
+	.button1 {
+  background-color: white; 
+  color: #0003c3cb; 
+  border: 2px solid #6366f1;
+}
+
+.button1:hover {
+  background-color: #6366f1;
+  color: white;
+}
 </style>
   
   <!-- <style>

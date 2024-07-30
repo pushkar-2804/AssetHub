@@ -96,15 +96,15 @@
 
 }
 
-async function fetchUserCart(){
-  try {
-    const response = await fetch(`http://localhost:3000/cart/view?userId=${userId}`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    });
+  async function fetchUserCart(){
+    try {
+      const response = await fetch(`http://localhost:3000/cart/view`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
 
     if (!response.ok) {
       throw new Error(`Error: ${response.statusText}`);
@@ -235,48 +235,50 @@ onMount(() => {
               </div>
             </section>
 
-            <div class="py-2 w-full h-full">
-              <div class="flex flex-col w-full h-full rounded-lg bg-white">
-                  <div class="flex rounded-lg py-1.5 justify-Left w-full h-10">
-                      <p class="mx-3 text-bold font-medium text-xl leading-relaxed text-slate-800">Your Cart Items:</p>
-                  </div>
-                  <div class="overflow-x-auto bg-white">
-                      {#if totalPrice= 0}
-                      <table class="min-w-full rounded-lg bg-white">
-                        <thead>
-                          <tr>
-                            <th class="py-2 px-4 border-b">Asset ID</th>
-                            <th class="py-2 px-4 border-b">Asset Name</th>
-                            <th class="py-2 px-4 border-b">Price</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {#each cartItems as item}
-                            <tr>
-                              <td class="py-2 px-4 border-b">{item.assetId}</td>
-                              <td class="py-2 px-4 border-b">{item.assetName}</td>
-                              <td class="py-2 px-4 border-b">${item.price}</td>
-                            </tr>
-                          {/each}
-                        </tbody>
-                        <tfoot>
-                          <tr>
-                            <td colspan="2" class="py-2 px-4 border-t font-bold">Total Price</td>
-                            <td class="py-2 px-4 border-t font-bold">${totalPrice}</td>
-                          </tr>
-                        </tfoot>
-                      </table>
-                      {:else}
-                      <div class="flex rounded-lg py-1.5 justify-center w-full h-10 mt-20">
-                          <p class="mx-3 text-bold text-lg leading-relaxed text-slate-800">Looks like your cart is empty!  <a href="#" class="text-blue-500">Click Here</a> to check out our store</p>
-                      </div>
-                      
-                      {/if}
+              <div class="py-2 w-full h-full">
+                <div class="flex flex-col w-full h-full rounded-lg bg-white">
+                    <div class="flex rounded-lg py-1.5 justify-Left w-full h-10">
+                        <p class="mx-3 text-bold font-medium text-xl leading-relaxed text-slate-800">Your Cart Items:</p>
                     </div>
-              </div>
-          </div>
+                    <div class="overflow-x-auto bg-white">
+                        {#if totalPrice= 0}
+                        <table class="min-w-full rounded-lg bg-white">
+                          <thead>
+                            <tr>
+                              <th class="py-2 px-4 border-b">Asset ID</th>
+                              <th class="py-2 px-4 border-b">Asset Name</th>
+                              <th class="py-2 px-4 border-b">Quantity</th>
+                              <th class="py-2 px-4 border-b">Price</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {#each cartItems as item}
+                              <tr>
+                                <td class="py-2 px-4 border-b">{item.assetId}</td>
+                                <td class="py-2 px-4 border-b">{item.assetName}</td>
+                                <td class="py-2 px-4 border-b">{item.quantity}</td>
+                                <td class="py-2 px-4 border-b">${item.price}</td>
+                              </tr>
+                            {/each}
+                          </tbody>
+                          <tfoot>
+                            <tr>
+                              <td colspan="2" class="py-2 px-4 border-t font-bold">Total Price</td>
+                              <td class="py-2 px-4 border-t font-bold">${totalPrice}</td>
+                            </tr>
+                          </tfoot>
+                        </table>
+                        {:else}
+                        <div class="flex rounded-lg py-1.5 justify-center w-full h-10 mt-20">
+                            <p class="mx-3 text-bold text-lg leading-relaxed text-slate-800">Looks like your cart is empty!  <a href="#" class="text-blue-500">Click Here</a> to check out our store</p>
+                        </div>
+                        
+                        {/if}
+                      </div>
+                </div>
             </div>
-      
+              </div>
+        
 
   </div>
 

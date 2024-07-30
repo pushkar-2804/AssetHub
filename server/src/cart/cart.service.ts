@@ -4,22 +4,37 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
+import { UpdateCartDto } from './dto/update-cart.dto';
 
 @Injectable()
 export class CartService {
   constructor(private database: DatabaseService) {}
 
-  async addToCart(userId: number, assetId: number) {
-    if (!userId || !assetId) {
+  async addToCart(userId: number, assetId: number, quantity: number) {
+    if (!assetId) {
       throw new BadRequestException('User ID and Asset ID are required.');
     }
+
     // if cart exists
-    let cart = await this.database.cart.findFirst({ where: { userId } });
+    let cart = await this.database.cart.findFirst({
+      where: { userId },
+      include: { cartItems: { include: { asset: true } } },
+    });
     // if not then create one
     if (!cart) {
       cart = await this.database.cart.create({
         data: { userId, totalPrice: 0 },
+        include: { cartItems: { include: { asset: true } } },
       });
+    }
+    if (cart) {
+      const alreadyExistInCart = cart.cartItems.filter(
+        (item) => item.asset.assetId == assetId,
+      );
+
+      if (alreadyExistInCart.length) {
+        throw new BadRequestException('Asset already present');
+      }
     }
 
     // find asset
@@ -35,15 +50,68 @@ export class CartService {
       data: {
         cartId: cart.id,
         assetId: asset.assetId,
+        quantity,
       },
     });
     // update the cart
     await this.database.cart.update({
       where: { id: cart.id },
-      data: { totalPrice: cart.totalPrice + asset.price },
+      data: { totalPrice: cart.totalPrice + asset.price * quantity },
     });
 
     return { cartId: cart.id, status: 'Asset added to cart' };
+  }
+
+  async updateCart(userId: number, updateCartDto: UpdateCartDto) {
+    const { cartItemId, quantity } = updateCartDto;
+
+    if (!cartItemId) {
+      throw new BadRequestException(' Cart ID are required.');
+    }
+
+    if (quantity < 0) {
+      throw new BadRequestException("quantity can't be less than 0");
+    }
+
+    const cart = await this.database.cart.findFirst({ where: { userId } });
+    if (!cart) {
+      throw new NotFoundException('Cart not found.');
+    }
+
+    const cartItem = await this.database.cartItem.findFirst({
+      where: { id: cartItemId },
+    });
+    if (!cartItem) {
+      throw new NotFoundException('Item not found in cart.');
+    }
+
+    if (quantity === 0) {
+      await this.database.cartItem.delete({ where: { id: cartItemId } });
+    } else {
+      await this.database.cartItem.update({
+        where: { id: cartItemId },
+        data: { quantity },
+      });
+    }
+
+    const updatedTotalPrice = await this.calculateTotalPrice(cart.id);
+    await this.database.cart.update({
+      where: { id: cart.id },
+      data: { totalPrice: updatedTotalPrice },
+    });
+
+    return { cartId: cart.id, status: 'Cart updated successfully' };
+  }
+
+  private async calculateTotalPrice(cartId: number): Promise<number> {
+    const cartItems = await this.database.cartItem.findMany({
+      where: { cartId },
+      include: { asset: true },
+    });
+    const totalPrice = cartItems.reduce((total, item) => {
+      return total + item.asset.price * item.quantity;
+    }, 0);
+    return totalPrice;
   }
 
   async viewCart(userId: number) {
@@ -64,6 +132,7 @@ export class CartService {
       assetId: item.asset.assetId,
       assetName: item.asset.assetName,
       price: item.asset.price,
+      quantity: item.quantity,
     }));
 
     return { totalPrice: cart.totalPrice, cartItems };

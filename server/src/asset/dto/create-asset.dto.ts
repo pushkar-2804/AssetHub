@@ -12,10 +12,6 @@ import {
 import { AssetCategory } from 'src/enums/asset-category.enum';
 
 export class CreateAssetDto {
-  @ApiProperty({ example: 1, description: 'User ID' })
-  @IsInt()
-  userId: number;
-
   @ApiProperty({ example: 'Asset Name', description: 'Name of the asset' })
   @IsString()
   assetName: string;

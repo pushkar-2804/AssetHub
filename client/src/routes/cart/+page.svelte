@@ -1,111 +1,78 @@
 <script>
   import { createEventDispatcher, onMount } from "svelte";
-  import {writable} from 'svelte/store';
-  import Footer  from '$lib/Footer.svelte';
+  import { writable, get } from 'svelte/store';
+  import Footer from '$lib/Footer.svelte';
 
-  function handleLogout() {
-      const dispatch = createEventDispatcher();
-      // Remove JWT token from local storage
-    localStorage.removeItem('token');
-    
-    // Redirect to the home page
-    window.location.href = '/';
-      dispatch('logout');
-}
-
-const errorMessage = writable('');
-  const isAuthenticated = writable(false);
-  const userMail = writable('');
-  let userId = '';
   let cartItems = [];
   let totalPrice = 0;
-
   let token;
   let dispatch = createEventDispatcher();
-  let data;
+
+  const errorMessage = writable('');
+  const isAuthenticated = writable(false);
+  const userMail = writable('');
+  const editingItem = writable(null); // Store for editing item
 
   function checkAuthToken() {
-  if (typeof window !== 'undefined') {
-    token = localStorage.getItem('token');
+    if (typeof window !== 'undefined') {
+      token = localStorage.getItem('token');
+    }
   }
-}
 
+  function handleLogout(){
+      localStorage.removeItem('token');
+      window.location.href = '/';
+      dispatch('logout');
+    }
 
-  async function fetchUserDetails() {
+  async function getUserProfile() {
 
   checkAuthToken();
 
-  if (!token) {
-    isAuthenticated.set(false);
-    window.location.href = '/login';
-    // return;
-  }
-  else {
+    if (!token) {
+      isAuthenticated.set(false);
+      window.location.href = '/login';
+    } else {
       isAuthenticated.set(true);
-      // return;
-  }
+    }
 
   try {
-    const response = await fetch('http://localhost:3000/auth/profile', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (response.ok) {
-      data = await response.json();
-      console.log(data);
-      userId = data.userId;
-      // isAuthenticated.set(true);
-    } else {
-      // isAuthenticated.set(false);
-      errorMessage.set('Failed to fetch user details. Please log in again.');
-    }
-  } catch (error) {
-    // isAuthenticated.set(false);
-    errorMessage.set('An error occurred. Please try again.');
-  }
-
-  try{
     const response = await fetch('http://localhost:3000/users/profile', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        userId: data.userId
-      })
+      }
     });
-    if (response.ok){
+    if (response.ok) {
       const userMailData = await response.json();
-      console.log(userMail);
       userMail.set(userMailData.email);
-      // isAuthenticated.set(true);
     } else {
-      // isAuthenticated.set(false);
       errorMessage.set('Failed to fetch user details. Please log in again.');
     }
   } catch (error) {
-    // isAuthenticated.set(false);
     errorMessage.set('An error occurred. Please try again.');
   }
-
-  fetchUserCart();
-
 }
 
-async function fetchUserCart(){
-  try {
-    const response = await fetch(`http://localhost:3000/cart/view?userId=${userId}`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    });
+  async function fetchUserCart() {
+    checkAuthToken();
+
+    if (!token) {
+      isAuthenticated.set(false);
+      window.location.href = '/login';
+    } else {
+      isAuthenticated.set(true);
+    }
+
+    try {
+      const response = await fetch('http://localhost:3000/cart/view', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
 
     if (!response.ok) {
       throw new Error(`Error: ${response.statusText}`);
@@ -119,11 +86,54 @@ async function fetchUserCart(){
   }
 }
 
+  async function updateCartItem(cartItemId, quantity) {
+    try {
+      const response = await fetch('http://localhost:3000/cart/update', {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ cartItemId, quantity })
+      });
 
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
 
-onMount(() => {
-  fetchUserDetails();
-});
+      const data = await response.json();
+      console.log('Update successful', data);
+
+      window.location.reload();
+
+      // Update the local cartItems array
+      const itemIndex = cartItems.findIndex(item => item.cartItemId === cartItemId);
+      if (itemIndex !== -1) {
+        cartItems[itemIndex].quantity = quantity;
+      }
+    } catch (error) {
+      console.error('Error updating cart item:', error);
+    }
+  }
+
+  function startEditing(item) {
+    editingItem.set({ ...item });
+  }
+
+  function cancelEditing() {
+    editingItem.set(null);
+  }
+
+  async function saveEditing() {
+    const editedItem = get(editingItem);
+    await updateCartItem(editedItem.cartItemId, editedItem.quantity);
+    editingItem.set(null);
+  }
+
+  onMount(() => {
+    getUserProfile();
+    fetchUserCart();
+  });
 </script>
 
 <div class="grow h-screen bg-gray-100">
@@ -194,53 +204,72 @@ onMount(() => {
 
 <div class="flex justify-center">
 <div class="py-5 w-4/5">
-  <div class="flex flex-col w-full rounded-lg align-middle bg-white">
-      <div class="flex rounded-lg py-1.5 justify-Left w-full">
-          <p class="mt-1 mx-5 text-[2.5rem] font-bold leading-[4rem] tracking-tight text-black">Your Cart Items:</p>
-      </div>
-      <div class="overflow-x-auto">
-          {#if totalPrice=0}
-          <table class="min-w-full rounded-lg">
-            <thead>
-              <tr>
-                <th class="py-2 px-4 border-b">Asset ID</th>
-                <th class="py-2 px-4 border-b">Asset Name</th>
-                <th class="py-2 px-4 border-b">Price</th>
-              </tr>
-            </thead>
-            <tbody>
-              {#each cartItems as item}
-                <tr>
-                  <td class="py-2 px-4 border-b">{item.assetId}</td>
-                  <td class="py-2 px-4 border-b">{item.assetName}</td>
-                  <td class="py-2 px-4 border-b">${item.price}</td>
-                </tr>
-              {/each}
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colspan="2" class="py-2 px-4 border-t font-bold">Total Price</td>
-                <td class="py-2 px-4 border-t font-bold">${totalPrice}</td>
-              </tr>
-            </tfoot>
-          </table>
-          <footer class="p-8">
-              <div class="mt-6 flex items-center justify-center gap-4">
-                  <a href="#" class="transform rounded-md bg-indigo-600/95 px-5 py-3 font-medium text-white transition-colors hover:bg-indigo-700">Checkout</a>
-                </div>
-          </footer>
-          {:else}
-          <div class="flex rounded-lg py-1.5 justify-center w-full h-10">
-              <p class="mx-3 text-bold text-lg leading-relaxed text-slate-800">Looks like your cart is empty!</p>
-          </div>
-          <footer class="p-8">
-              <div class="mt-6 flex items-center justify-center gap-4">
-                  <a href="#" class="transform rounded-md bg-indigo-600/95 px-5 py-3 font-medium text-white transition-colors hover:bg-indigo-700">Click here to Browse Assets</a>
-                </div>
-          </footer>
-          {/if}
+    <div class="flex flex-col w-full rounded-lg align-middle bg-white">
+        <div class="flex rounded-lg py-1.5 justify-Left w-full">
+            <p class="mt-1 mb-4 mx-5 text-[2.5rem] font-bold leading-[4rem] tracking-tight text-black">Your Cart Items:</p>
         </div>
-  </div>
+        <div class="overflow-x-auto">
+            {#if totalPrice!=0}
+            <table class="min-w-full rounded-lg">
+              <thead>
+                <tr>
+                  <th class="py-2 px-4 border-b">Asset ID</th>
+                  <th class="py-2 px-4 border-b">Asset Name</th>
+                  <th class="py-2 px-4 border-b">Quantity</th>
+                  <th class="py-2 px-4 border-b">Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                {#each cartItems as item}
+                  <tr>
+                    <td class="py-2 px-4 border-b"><div class="flex justify-center">{item.assetId}</div></td>
+                    <td class="py-2 px-4 border-b"><div class="flex justify-center">{item.assetName}</div></td>
+                    <td class="py-2 px-4 border-b">
+                      {#if $editingItem && $editingItem.cartItemId === item.cartItemId}
+                      <div class="flex justify-center">
+                      <input type="number" min="1" bind:value={$editingItem.quantity} class="border rounded px-2 py-1" />
+                      <button on:click={saveEditing} class="ml-2 text-blue-500">Save</button>
+                      <button on:click={cancelEditing} class="ml-2 text-red-500">Cancel</button>
+                    </div>
+                      {:else}
+                      <div class="flex justify-center">
+                      {item.quantity}
+                      <button on:click={() => startEditing(item)} class="ml-2">
+                        <img class="w-7 inline hover:bg-gray-200 rounded-md p-1" src="./edit-icon.svg" alt="update" />
+                      </button>
+                    </div>
+                      {/if}
+                    </td>
+                    <td class="py-2 px-4 border-b"><div class="flex justify-center">${item.price}</div></td>
+                  </tr>
+                {/each}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td  class="py-8 px-4 border-t font-bold"><div class="flex justify-center">Total Price:</div></td>
+                  <td  class="py-8 px-4 border-t font-bold"></td>
+                  <td  class="py-8 px-4 border-t font-bold"></td>
+                  <td  class="py-8 px-4 border-t font-bold"><div class="flex justify-center">${totalPrice}</div></td>
+                </tr>
+              </tfoot>
+            </table>
+            <footer class="p-8">
+                <div class="mt-4 flex items-center justify-center gap-4">
+                    <a href="#" class="transform rounded-md bg-indigo-600/95 px-5 py-3 font-medium text-white transition-colors hover:bg-indigo-700">Checkout</a>
+                  </div>
+            </footer>
+            {:else}
+            <div class="flex rounded-lg py-1.5 justify-center w-full h-10">
+                <p class="mx-3 text-bold text-lg leading-relaxed text-slate-800">Looks like your cart is empty!</p>
+            </div>
+            <footer class="p-8">
+                <div class="mt-4 flex items-center justify-center gap-4">
+                    <a href="#" class="transform rounded-md bg-indigo-600/95 px-5 py-3 font-medium text-white transition-colors hover:bg-indigo-700">Click here to Browse Assets</a>
+                  </div>
+            </footer>
+            {/if}
+          </div>
+    </div>
 </div>
 </div>
 
