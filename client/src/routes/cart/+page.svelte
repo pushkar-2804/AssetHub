@@ -1,12 +1,24 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
-  import { onMount } from 'svelte';
-  import { writable } from 'svelte/store';
-  import Footer from "$lib/Footer.svelte";
+  import { createEventDispatcher, onMount } from "svelte";
+  import {writable} from 'svelte/store';
+  import Footer  from '$lib/Footer.svelte';
 
-  const errorMessage = writable('');
+  function handleLogout() {
+      const dispatch = createEventDispatcher();
+      // Remove JWT token from local storage
+    localStorage.removeItem('token');
+    
+    // Redirect to the home page
+    window.location.href = '/';
+      dispatch('logout');
+}
+
+const errorMessage = writable('');
   const isAuthenticated = writable(false);
   const userMail = writable('');
+  let userId = '';
+  let cartItems = [];
+  let totalPrice = 0;
 
   let token;
   let dispatch = createEventDispatcher();
@@ -18,11 +30,6 @@
   }
 }
 
-  function handleLogout(){
-    localStorage.removeItem('token');
-    window.location.href = '/';
-    dispatch('logout');
-  }
 
   async function fetchUserDetails() {
 
@@ -30,6 +37,7 @@
 
   if (!token) {
     isAuthenticated.set(false);
+    window.location.href = '/login';
     // return;
   }
   else {
@@ -49,6 +57,7 @@
     if (response.ok) {
       data = await response.json();
       console.log(data);
+      userId = data.userId;
       // isAuthenticated.set(true);
     } else {
       // isAuthenticated.set(false);
@@ -84,14 +93,40 @@
     errorMessage.set('An error occurred. Please try again.');
   }
 
+  fetchUserCart();
 
 }
+
+async function fetchUserCart(){
+  try {
+    const response = await fetch(`http://localhost:3000/cart/view?userId=${userId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    cartItems = data.cartItems;
+    totalPrice = data.totalPrice;
+  } catch (error) {
+    console.error('Error fetching cart data:', error);
+  }
+}
+
+
 
 onMount(() => {
   fetchUserDetails();
 });
 </script>
 
+<div class="grow h-screen bg-gray-100">
 <nav class="bg-white border-gray-200 dark:bg-gray-900">
   <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
   <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
@@ -144,10 +179,10 @@ onMount(() => {
         <a href="/" class="block py-2 px-3 md:p-0 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:dark:text-blue-500" aria-current="page">Home</a>
       </li>
       <li>
-        <a href="/asset-listing" class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Asset Listing</a>
+        <a href="asset-listing" class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Asset Listing</a>
       </li>
       <li>
-        <a href="/asset-browsing" class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Browse Assets</a>
+        <a href="asset-browsing" class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Browse Assets</a>
       </li>
       <li>
         <a href="/cart" class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">View Cart</a>
@@ -157,28 +192,61 @@ onMount(() => {
   </div>
 </nav>
 
-<section class="py-24 flex items-center justify-center bg-white">
-  <div class="mx-auto max-w-[43rem]">
-    <div class="text-center">
-      <!-- <p class="text-lg font-medium leading-8 text-indigo-600/95">Introducing an Asset Marketplace</p> -->
-      <h1 class="mt-3 text-[3.5rem] font-bold leading-[4rem] tracking-tight text-black">Browse, Buy and Sell Assets with Crypto</h1>
-      <p class="mt-3 text-lg leading-relaxed text-slate-400">Welcome to AssetHub, your secure online marketplace for buying and selling assets using cryptocurrency seamlessly bridging traditional and digital markets.</p>
-    </div>
-
-    {#if !$isAuthenticated}
-    <div class="mt-6 flex items-center justify-center gap-4">
-      <a href="/login" class="transform rounded-md bg-indigo-600/95 px-5 py-3 font-medium text-white transition-colors hover:bg-indigo-700">Click here to Login</a>
-    </div>
-    {:else}
-    <div class="mt-6 flex items-center justify-center gap-4">
-      <a href="#" class="transform rounded-md bg-indigo-600/95 px-5 py-3 font-medium text-white transition-colors hover:bg-indigo-700">Browse Assets</a>
-      <a href="#" class="transform rounded-md border border-slate-200 px-7 py-3 font-medium text-slate-900 transition-colors hover:bg-slate-50"> List Assets </a>
-    </div>
-    {/if}
+<div class="flex justify-center">
+<div class="py-5 w-4/5">
+  <div class="flex flex-col w-full rounded-lg align-middle bg-white">
+      <div class="flex rounded-lg py-1.5 justify-Left w-full">
+          <p class="mt-1 mx-5 text-[2.5rem] font-bold leading-[4rem] tracking-tight text-black">Your Cart Items:</p>
+      </div>
+      <div class="overflow-x-auto">
+          {#if totalPrice=0}
+          <table class="min-w-full rounded-lg">
+            <thead>
+              <tr>
+                <th class="py-2 px-4 border-b">Asset ID</th>
+                <th class="py-2 px-4 border-b">Asset Name</th>
+                <th class="py-2 px-4 border-b">Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              {#each cartItems as item}
+                <tr>
+                  <td class="py-2 px-4 border-b">{item.assetId}</td>
+                  <td class="py-2 px-4 border-b">{item.assetName}</td>
+                  <td class="py-2 px-4 border-b">${item.price}</td>
+                </tr>
+              {/each}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="2" class="py-2 px-4 border-t font-bold">Total Price</td>
+                <td class="py-2 px-4 border-t font-bold">${totalPrice}</td>
+              </tr>
+            </tfoot>
+          </table>
+          <footer class="p-8">
+              <div class="mt-6 flex items-center justify-center gap-4">
+                  <a href="#" class="transform rounded-md bg-indigo-600/95 px-5 py-3 font-medium text-white transition-colors hover:bg-indigo-700">Checkout</a>
+                </div>
+          </footer>
+          {:else}
+          <div class="flex rounded-lg py-1.5 justify-center w-full h-10">
+              <p class="mx-3 text-bold text-lg leading-relaxed text-slate-800">Looks like your cart is empty!</p>
+          </div>
+          <footer class="p-8">
+              <div class="mt-6 flex items-center justify-center gap-4">
+                  <a href="#" class="transform rounded-md bg-indigo-600/95 px-5 py-3 font-medium text-white transition-colors hover:bg-indigo-700">Click here to Browse Assets</a>
+                </div>
+          </footer>
+          {/if}
+        </div>
   </div>
-</section>
+</div>
+</div>
 
 <Footer/>
+
+</div>
 
 
 <style>

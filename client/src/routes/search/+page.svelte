@@ -1,146 +1,130 @@
-<script>
-  import { page } from '$app/stores';
-  import { onMount } from 'svelte';
-  import Table from '$lib/search-table.svelte';
-  import { createEventDispatcher } from 'svelte';
-  import { onMount } from 'svelte';
-  import { writable } from 'svelte/store';
-
-  /** @type {import('./$types').PageData} */
+<script lang="ts">
   export let data;
-  console.log("Initial data from server", data.assets);
+  // const { assets = [] } = data;  // Ensure assets is always an array
 
+  const assets = writable<Array<{
+    id: number;
+    assetName: string;
+    description: string;
+    price: number;
+    category: string;
+    image: string;
+    images: string[];
+  }>>([]);
 
-  let options = [
-      {
-          text: `Gadget`
-      },
-      {
-          text: `Deals`
-      },
-      {
-          text: `Software`
-      }
-  ];
-
-//   let selected;
-  let selected = options[0].text
-  let category = "";
-  let price = "";
-
-  let assets = data.assets; // Use the assets from the server-side load function
-  let filterAssets = [];
-  
-
-  $: {
-    // Recalculate the filtered assets whenever category or price changes
-    filterAssets = assets.filter(asset => {
-      const matchesCategory = category ? asset.category === category : true;
-      const matchesPrice = price ? asset.price <= price : true;
-      return matchesCategory && matchesPrice;
-    });
-
-
-    console.log("Category", filterAssets.matchesCategory);
-    console.log("Price", filterAssets.matchesPrice)
-    console.log("Filtered assets", filterAssets)
-  }
-
-  //  // Extract category and price from URL parameters
-  //  $: {
-  //   const url = new URL(page.url);
-  //   category = url.searchParams.get('category') || '';
-  //   price = parseFloat(url.searchParams.get('price')) || '';
-  // }
-
-    // Set category and price from URL parameters on page load
-    onMount(() => {
-    const url = new URL(page.url);
-    category = url.searchParams.get('category') || '';
-    price = parseFloat(url.searchParams.get('price')) || 0;
-  });
-
-
-
-
-  const handleSubmit = () => {
-    const params = new URLSearchParams();
-    if (selected) {
-      params.set("category", selected);
-    }
-    if (price) {
-      params.set("price", price.toString());
-    }
-    console.log("Navigating to:", `/search?${params.toString()}`);
-    goto(`/search?${params.toString()}`);
-
-
-    async function handleSubmit() {
-      try {
-        const response = await fetch('http://localhost:3000/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(loginData)
-        });
-  
-        const data = await response.json();
-        if (response.ok) {
-
-          localStorage.setItem('token', data.access_token);
-          dispatch('loginSuccess', data);
-          window.location.href = '/';
-        } else {
-          errorMessage.set(data.message);
-        }
-      } catch (error) {
-        errorMessage.set('An error occurred. Please try again.');
-      }
-    }
-
-
-
-  };
-
-
+  import { writable } from 'svelte/store';
+  const isAuthenticated = writable(false);
+  const userMail = writable('');
 </script>
 
 
-<div class="mt-10 pt-10 w-full max-w-xl p-12 mx-auto rounded-lg shadow-xl dark:bg-white/10 bg-white/30 ring-1 ring-gray-900/5 backdrop-blur-lg">
-  <form on:submit|preventDefault={handleSubmit} method="GET" action="?/filterasset">
-    <div class="flex flex-wrap -mx-3 mb-2">
-      <div class="w-full px-3 mb-6 md:mb-0">
-        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="category">
-          Filter by Category
-        </label>
-        <select id="category" name="category" bind:value={selected} class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500">
-          {#each options as option}
-            <option value={option.text}>
-              {option.text}
-            </option>
-          {/each}
-        </select>
-      </div>
-      <div class="w-full px-3 mb-6 md:mb-0">
-        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="price">
-          Filter by Price
-        </label>
-        <input
-          class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-          id="price"
-          type="number"
-          placeholder="Enter price"
-          bind:value={price}
-        />
-      </div>
-      <button type="submit" class="bg-blue-500 hover:bg-gray-700 text-white font-bold mt-5 ml-2 px-2 rounded">
-        SEARCH
-      </button>
+<div class="grow h-screen bg-gray-100">
+  <nav class="bg-white border-gray-200 dark:bg-gray-900">
+    <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+    <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
+        <img src="./AssetHub.svg" class="h-8" alt="AssetHub Logo" />
+        <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">AssetHub</span>
+    </a>
+    {#if !$isAuthenticated}
+    <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+        <form action="/login">
+            <button type="submit" class="submit-button text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Get started for free</button>
+        </form>
     </div>
-  </form>
+    {:else}
+    <!-- component -->
+    <div class=" relative inline-block dropdown md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+      <span class="rounded-md shadow-sm">
+        <button class="inline-flex text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" 
+         type="button" aria-haspopup="true" aria-expanded="true" aria-controls="headlessui-menu-items-117">
+          <span>Options</span>
+          <svg class="w-5 h-5 ml-2 -mr-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+          </button>
+        </span>
+      <div class="hidden dropdown-menu">
+        <div class="absolute right-0 w-56 mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg outline-none" aria-labelledby="headlessui-menu-button-1" id="headlessui-menu-items-117" role="menu">
+          {#if $isAuthenticated}
+          <div class="px-4 py-3">
+            <p class="text-sm leading-5">Signed in as</p>
+            <p class="text-sm font-medium leading-5 text-gray-900 truncate">{$userMail}</p>
+          </div>
+          {/if}
+          <div class="py-1">
+            <a href="/dashboard" class="text-gray-700 flex justify-between w-full px-4 py-2 text-sm leading-5 text-left"  role="menuitem" >Dashboard</a>
+            <a href="#" class="text-gray-700 flex justify-between w-full px-4 py-2 text-sm leading-5 text-left"  role="menuitem" >Wallet connection</a>
+            <!-- <span role="menuitem" tabindex="-1" class="flex justify-between w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 cursor-not-allowed opacity-50" aria-disabled="true">New feature (soon)</span> -->
+            <a href="/profile-settings" class="text-gray-700 flex justify-between w-full px-4 py-2 text-sm leading-5 text-left" role="menuitem" >Account settings</a></div>
+          <div class="py-1">
+            <form on:submit={handleLogout}>
+              <button type="submit" class="text-gray-700 flex justify-between w-full px-4 py-2 text-sm leading-5 text-left" role="menuitem">
+                Sign out
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div> 
+    {/if}
+    <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-cta">
+      <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+        <li>
+          <a href="/" class="block py-2 px-3 md:p-0 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:dark:text-blue-500" aria-current="page">Home</a>
+        </li>
+        <li>
+          <a href="/asset-listing" class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Asset Listing</a>
+        </li>
+        <li>
+          <a href="/asset-browsing" class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Browse Assets</a>
+        </li>
+        <li>
+          <a href="/cart" class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">View Cart</a>
+        </li>
+      </ul>
+    </div>
+    </div>
+  </nav>
+
+
+<div class="mt-10 pt-10 w-full max-w-xl p-5 mx-auto rounded-lg shadow-xl dark:bg-white/10 bg-white/30 ring-1 ring-gray-900/5 backdrop-blur-lg">
+  <div class="flex items-center justify-between mb-4">
+    <div class="space-y-1">
+      <h1 class="text-4xl font-bold mb-5 text-gray-900 dark:text-white">Filtered Assets</h1>
+    </div>
+  </div>
+
+  <table class="min-w-full divide-y divide-gray-200">
+    <thead class="bg-blue-400">
+      <tr>
+        <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Name</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Description</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Price</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Category</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Image</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-gray-200">
+      {#if assets.length === 0}
+        <tr>
+          <td colspan="6" class="px-6 py-4 text-center text-gray-700">No assets available for the selected filters.</td>
+        </tr>
+      {/if}
+      {#each assets as asset (asset.id || `asset-${asset.assetName}`)}
+        <tr>
+          <td class="px-6 py-4 whitespace-nowrap">{asset.assetName}</td>
+          <td class="px-6 py-4 whitespace-nowrap">{asset.description}</td>
+          <td class="px-6 py-4 whitespace-nowrap">{asset.price}</td>
+          <td class="px-6 py-4 whitespace-nowrap">{asset.category}</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <img src={asset.image} alt={asset.assetName} class="w-20 h-20 object-cover" />
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded">Add to Cart</button>
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded">View Asset</button>
+          </td>
+        </tr>
+      {/each}
+    </tbody>
+  </table>
 </div>
-
-
-<div>
-  <h2><strong>Search Results</strong></h2>
-  <Table filterAssets={filterAssets} />
 </div>
