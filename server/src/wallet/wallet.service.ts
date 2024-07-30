@@ -3,7 +3,10 @@ import { getWalletList } from 'src/utils/neucron-wallet.util';
 
 @Injectable()
 export class WalletService {
-  async login(email: string, password: string): Promise<string[]> {
+  async login(
+    email: string,
+    password: string,
+  ): Promise<{ wallet_id: string; paymail_id: string }[]> {
     try {
       const wallets = await getWalletList(email, password);
       return wallets;

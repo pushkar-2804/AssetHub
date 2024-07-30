@@ -10,7 +10,7 @@ export class WalletController {
   @UseGuards(JwtAuthGuard)
   @Post('get-wallet-list')
   @ApiOperation({ summary: 'Log in to fetch wallet address' })
-  async login(@Body() email: string, password: string) {
-    return this.walletService.login(email, password);
+  async login(@Body() credentials: { email: string; password: string }) {
+    return this.walletService.login(credentials.email, credentials.password);
   }
 }
