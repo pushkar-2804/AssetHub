@@ -22,8 +22,13 @@ export class WalletController {
     description: 'Wallet address fetched successfully.',
   })
   @ApiBearerAuth()
-  async login(@Body() credentials: LoginDto) {
-    return this.walletService.login(credentials.email, credentials.password);
+  async login(@Req() req, @Body() credentials: LoginDto) {
+    const userId = +req.user.userId;
+    return this.walletService.login(
+      userId,
+      credentials.email,
+      credentials.password,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
@@ -38,7 +43,7 @@ export class WalletController {
     @Req() req,
     @Body() updateWalletDto: CreateWalletDto,
   ) {
-    const userId = req.user.userId;
+    const userId = +req.user.userId;
     return this.walletService.connectWallet(
       userId,
       updateWalletDto.walletAddress,
