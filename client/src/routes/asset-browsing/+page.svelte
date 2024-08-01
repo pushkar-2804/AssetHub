@@ -79,29 +79,35 @@
 
 
   const handleAddToCart = async (assetId: number) => {
-  // Assuming userId is available or derived
-  const userId = 1; // Replace with actual userId retrieval logic
+    const userId = 1; // Replace with actual userId retrieval logic
+    const token = localStorage.getItem('token'); // Retrieve JWT token from local storage
 
-  try {
-    const response = await fetch('http://localhost:3000/cart/add', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        // 'Authorization': 'Bearer your-jwt-token-here', // Include JWT if required
-      },
-      body: JSON.stringify({ userId, assetId }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to add item to cart');
+    if (!token) {
+      console.error('No JWT token found');
+      return;
     }
 
-    const result = await response.json();
-    console.log('Item added to cart:', result);
-  } catch (error) {
-    console.error('Error adding to cart:', error);
-  }
-};
+    try {
+      const response = await fetch('http://localhost:3000/cart/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, // Include JWT token if required
+        },
+        body: JSON.stringify({ userId, assetId, quantity: 1 }), // Include userId in the body
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to add item to cart: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      console.log('Item added to cart:', result);
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+    }
+  };
+
 
 
 
@@ -122,7 +128,7 @@
     const params = new URLSearchParams();
     if (category) params.append('category', category);
     if (minPrice) params.append('minPrice', minPrice);
-    if (maxPrice) params.append('maxPrice', maxPrice);
+    // if (maxPrice) params.append('maxPrice', maxPrice);
 
     goto(`/search?${params.toString()}`);
 };

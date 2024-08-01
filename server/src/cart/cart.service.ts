@@ -16,6 +16,7 @@ export class CartService {
     }
 
     // if cart exists
+    console.log('hello', assetId)
     let cart = await this.database.cart.findFirst({
       where: { userId },
       include: { cartItems: { include: { asset: true } } },
