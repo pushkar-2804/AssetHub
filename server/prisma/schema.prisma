@@ -74,7 +74,7 @@ model Purchases {
   userId        Int
   assetId       Int
   sellerId      Int
-  txId Int      @unique
+  txId String      @unique
   transactionId Int
   date          DateTime
 }
