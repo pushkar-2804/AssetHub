@@ -5,6 +5,8 @@ import {
 } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { UpdateCartDto } from './dto/update-cart.dto';
+import { handlePayment } from 'src/utils/neucron-wallet.util';
+import * as CryptoJS from 'crypto-js';
 
 @Injectable()
 export class CartService {
@@ -140,39 +142,79 @@ export class CartService {
   }
 
   async checkout(userId: number, cartId: number) {
-    if (!userId || !cartId) {
-      throw new BadRequestException('User ID and Cart ID are required.');
-    }
-    const cart = await this.database.cart.findUnique({
-      where: { id: cartId, userId },
-      include: { cartItems: { include: { asset: true } } },
-    });
-    if (!cart) {
-      throw new NotFoundException('Cart not found or already checked out');
-    }
-    // TODO: to be done after wallet integration.
-    // Create txn here
-    const transactionId = Math.floor(Math.random() * 1000000); // random for now
-    const transaction = await this.database.purchases.create({
-      data: {
-        userId,
-        transactionId,
-        date: new Date(),
-      },
-    });
-    // Delete all cart items first
-    // Delete all cart items first
-    await this.database.cartItem.deleteMany({
-      where: { cartId: cart.id },
-    });
+    try {
+      if (!userId || !cartId) {
+        throw new BadRequestException('User ID and Cart ID are required.');
+      }
+      const cart = await this.database.cart.findUnique({
+        where: { id: cartId, userId },
+        include: {
+          cartItems: {
+            include: {
+              asset: { include: { user: { include: { wallet: true } } } },
+            },
+          },
+        },
+      });
+      if (!cart) {
+        throw new NotFoundException('Cart not found or already checked out');
+      }
+      const user = await this.database.wallet.findUnique({ where: { userId } });
+      const creds = user.walletCredential;
+      const decrypted = CryptoJS.AES.decrypt(creds, 'your_secret_key');
+      const decryptedString = decrypted.toString(CryptoJS.enc.Utf8);
 
-    // Delete the cart
-    await this.database.cart.delete({
-      where: { id: cart.id },
-    });
-    return {
-      transactionId: transaction.transactionId,
-      status: 'Checkout successful',
-    };
+      const credentials = JSON.parse(decryptedString);
+
+      const email = credentials.email;
+      const password = credentials.password;
+      console.log(email, password);
+      const transactionId = Math.floor(Math.random() * 1000000);
+      const transactions = [];
+
+      for (const cartItem of cart.cartItems) {
+        const asset = cartItem.asset;
+        const amount = asset.price * cartItem.quantity;
+        const seller = asset.user;
+        // Handle payment for each seller
+        const txId = await handlePayment(
+          email,
+          password,
+          seller.wallet.walletAddress,
+          amount,
+          cartId,
+        );
+        //         const txId = Math.floor(Math.random() * 1000000);
+
+        transactions.push({
+          userId,
+          transactionId,
+          assetId: asset.assetId,
+          sellerId: seller.id,
+          txId,
+          date: new Date(),
+        });
+      }
+
+      // Save transactions to database
+      await this.database.purchases.createMany({ data: transactions });
+      // Delete all cart items first
+      // Delete all cart items first
+      await this.database.cartItem.deleteMany({
+        where: { cartId: cart.id },
+      });
+
+      // Delete the cart
+      await this.database.cart.delete({
+        where: { id: cart.id },
+      });
+      return {
+        transactionId: transactionId,
+        status: 'Checkout successful',
+      };
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   }
 }
