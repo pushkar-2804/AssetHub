@@ -17,7 +17,7 @@
   const category = writable('GADGET');
 
   const assets = writable<Array<{
-    id: number;
+    assetId: number;
     assetName: string;
     description: string;
     price: number;
@@ -30,8 +30,23 @@
   const selectedAsset = writable<any>(null);
 
   async function fetchAssets() {
+    const userId = 1; // Replace with actual userId retrieval logic
+    const token = localStorage.getItem('token'); // Retrieve JWT token from local storage
+
+    if (!token) {
+      console.error('No JWT token found');
+      return;
+    }
+
     try {
-      const response = await fetch('http://localhost:3000/assets/browse');
+      const response = await fetch('http://localhost:3000/assets/browse',{
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, // Include JWT token if required
+        },
+        // body: JSON.stringify({ userId, assetId, quantity: 1 }), // Include userId in the body
+      });
       if (!response.ok) {
         throw new Error(`Failed to fetch assets: ${response.statusText}`);
       }
@@ -57,27 +72,6 @@
     showModal.set(true);
   };
 
-  // const handleAddToCart = async (assetId) => {
-  //   try {
-  //     const response = await fetch('http://localhost:3000/cart/add', {
-  //       method: 'POST',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify({ assetId })
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error('Failed to add item to cart');
-  //     }
-
-  //     const result = await response.json();
-  //     console.log('Item added to cart:', result);
-  //   } catch (error) {
-  //     console.error('Error adding to cart:', error);
-  //   }
-  // };
-
-
-
   const handleAddToCart = async (assetId: number) => {
     const userId = 1; // Replace with actual userId retrieval logic
     const token = localStorage.getItem('token'); // Retrieve JWT token from local storage
@@ -92,7 +86,7 @@
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // Include JWT token if required
+          Authorization: `Bearer ${token}`, // Include JWT token if required
         },
         body: JSON.stringify({ userId, assetId, quantity: 1 }), // Include userId in the body
       });
@@ -119,20 +113,24 @@
 
 
   const handleFilter = (event) => {
+    const token = localStorage.getItem('token'); // Retrieve JWT token from local storage
+
+    if (!token) {
+      console.error('No JWT token found');
+      return;
+    }
+
     event.preventDefault();
     const formData = new FormData(event.target);
     const category = formData.get('category')?.toString() || '';
-    const minPrice = formData.get('minPrice')?.toString() || '';
-    // const maxPrice = formData.get('maxPrice')?.toString() || '';
+    const price = formData.get('price')?.toString() || '';
 
     const params = new URLSearchParams();
     if (category) params.append('category', category);
-    if (minPrice) params.append('minPrice', minPrice);
-    // if (maxPrice) params.append('maxPrice', maxPrice);
+    if (price) params.append('price', price);
 
     goto(`/search?${params.toString()}`);
-};
-
+  };
 
 
 
@@ -211,7 +209,7 @@
     <div class="mb-4">
       <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
       <!-- <input type="text" name="category" id="category" class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" /> -->
-      <select id="category" bind:value={$category}>
+      <select id="category" bind:value={$category} name="category">
         {#each options as option}
           <option value={option.text}>
             {option.text}
@@ -220,13 +218,13 @@
       </select>
     </div>
     <div class="mb-4">
-      <label for="minPrice" class="block text-sm font-medium text-gray-700">Min Price</label>
-      <input type="number" name="minPrice" id="minPrice" class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+      <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
+      <input type="number" name="price" id="price" class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
     </div>
-    <div class="mb-4">
+    <!-- <div class="mb-4">
       <label for="maxPrice" class="block text-sm font-medium text-gray-700">Max Price</label>
       <input type="number" name="maxPrice" id="maxPrice" class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-    </div>
+    </div> -->
     <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded">Filter</button>
   </form>
   </div>
@@ -257,17 +255,17 @@
           </tr>
         {/if}
         <!-- {#each $assets as asset (asset.id)} -->
-        {#each $assets as asset (asset.id || `asset-${asset.assetName}`)}
+        {#each $assets as asset (asset.assetId || `asset-${asset.assetName}`)}
           <tr>
             <td class="px-6 py-4 whitespace-nowrap">{asset.assetName}</td>
             <td class="px-6 py-4 whitespace-nowrap">{asset.description}</td>
             <td class="px-6 py-4 whitespace-nowrap">{asset.price}</td>
             <td class="px-6 py-4 whitespace-nowrap">{asset.category}</td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <img src={asset.image} alt={asset.assetName} class="w-20 h-20 object-cover" />
+              <img src={asset.thumbnail} alt={asset.assetName} class="w-20 h-20 object-cover" />
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <button on:click={() => handleAddToCart(asset.id)} class="bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded">Add to Cart</button>
+              <button on:click={() => handleAddToCart(asset.assetId)} class="bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded">Add to Cart</button>
               <button on:click={() => handleViewAsset(asset)} class="bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded">View Asset</button>
             </td>
           </tr>

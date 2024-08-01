@@ -19,23 +19,26 @@ import {
   ApiOperation,
   ApiResponse,
   ApiQuery,
-  ApiConsumes,
+  ApiConsumes, 
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { storage } from 'src/utils/temp-file-storage.util';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+
 
 @ApiTags('assets')
 @Controller('assets')
 export class AssetsController {
   constructor(private readonly assetsService: AssetService) {}
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post('list')
   @ApiOperation({ summary: 'List a new asset' })
   @ApiResponse({ status: 201, description: 'Asset created successfully.' })
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FilesInterceptor('images', 10, { storage }))
+  @ApiBearerAuth()
   async create(
     @Req() req,
     @Body() createAssetDto: CreateAssetDto,
@@ -51,7 +54,7 @@ export class AssetsController {
     return this.assetsService.create(userId, createAssetDto);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('browse')
   @ApiOperation({ summary: 'Browse assets. Provide filters in query' })
   @ApiQuery({
@@ -73,17 +76,19 @@ export class AssetsController {
     type: String,
   })
   @ApiResponse({ status: 200, description: 'Assets retrieved successfully.' })
+  @ApiBearerAuth()
   async findAll(@Query() filters: any) {
     return this.assetsService.findAll(filters);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('details/:id')
   @ApiOperation({ summary: 'Get asset details' })
   @ApiResponse({
     status: 200,
     description: 'Asset details retrieved successfully.',
   })
+  @ApiBearerAuth()
   async findOne(@Param('id') id: string) {
     return this.assetsService.findOne(+id);
   }

@@ -46,6 +46,7 @@
   });
 
   async function handleSubmit(event: Event) {
+    console.log(token)
     event.preventDefault();
 
     if (!token) {
@@ -73,7 +74,7 @@
       const response = await fetch('http://localhost:3000/assets/list', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: formData,
       });
