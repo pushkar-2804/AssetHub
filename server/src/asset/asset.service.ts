@@ -95,4 +95,8 @@ export class AssetService {
       images: asset.images,
     };
   }
+  async findMyAssets(userId: number) {
+    const assets = await this.database.asset.findMany({ where: { userId } });
+    return assets || [];
+  }
 }

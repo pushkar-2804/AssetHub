@@ -214,6 +214,7 @@ export class CartService {
       await this.database.cart.delete({
         where: { id: cart.id },
       });
+
       return {
         transactionId: transactionId,
         status: 'Checkout successful',

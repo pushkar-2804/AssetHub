@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Purchases" ALTER COLUMN "txId" SET DATA TYPE TEXT;
