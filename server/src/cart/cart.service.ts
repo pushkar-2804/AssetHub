@@ -147,13 +147,10 @@ export class CartService {
     return { totalPrice: cart.totalPrice, cartItems };
   }
 
-  async checkout(userId: number, cartId: number) {
+  async checkout(userId: number) {
     try {
-      if (!userId || !cartId) {
-        throw new BadRequestException('User ID and Cart ID are required.');
-      }
       const cart = await this.database.cart.findUnique({
-        where: { id: cartId, userId },
+        where: { userId },
         include: {
           cartItems: {
             include: {
@@ -165,6 +162,7 @@ export class CartService {
       if (!cart) {
         throw new NotFoundException('Cart not found or already checked out');
       }
+      const cartId: number = cart.id;
       const user = await this.database.wallet.findUnique({ where: { userId } });
       const creds = user.walletCredential;
       const decrypted = CryptoJS.AES.decrypt(creds, 'your_secret_key');
@@ -174,7 +172,7 @@ export class CartService {
 
       const email = credentials.email;
       const password = credentials.password;
-      console.log(email, password);
+      // console.log(email, password);
       const transactionId = Math.floor(Math.random() * 1000000);
       const transactions = [];
 
