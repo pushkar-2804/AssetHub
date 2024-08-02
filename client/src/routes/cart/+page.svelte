@@ -124,6 +124,10 @@
     editingItem.set(null);
   }
 
+  function deleteCartItem(item) {
+    updateCartItem(item.cartItemId, 0);
+  }
+
   async function saveEditing() {
     const editedItem = get(editingItem);
     await updateCartItem(editedItem.cartItemId, editedItem.quantity);
@@ -169,7 +173,7 @@
           {/if}
           <div class="py-1">
             <a href="/dashboard" class="text-gray-700 flex justify-between w-full px-4 py-2 text-sm leading-5 text-left"  role="menuitem" >Dashboard</a>
-            <a href="#" class="text-gray-700 flex justify-between w-full px-4 py-2 text-sm leading-5 text-left"  role="menuitem" >Wallet connection</a>
+            <a href="/wallet-connection" class="text-gray-700 flex justify-between w-full px-4 py-2 text-sm leading-5 text-left"  role="menuitem" >Wallet connection</a>
             <!-- <span role="menuitem" tabindex="-1" class="flex justify-between w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 cursor-not-allowed opacity-50" aria-disabled="true">New feature (soon)</span> -->
             <a href="/profile-settings" class="text-gray-700 flex justify-between w-full px-4 py-2 text-sm leading-5 text-left" role="menuitem" >Account settings</a></div>
           <div class="py-1">
@@ -232,15 +236,33 @@
                       <button on:click={cancelEditing} class="ml-2 text-red-500">Cancel</button>
                     </div>
                       {:else}
-                      <div class="flex justify-center">
-                      {item.quantity}
-                      <button on:click={() => startEditing(item)} class="ml-2">
-                        <img class="w-7 inline hover:bg-gray-200 rounded-md p-1" src="./edit-icon.svg" alt="update" />
-                      </button>
+                  <div>
+                    <div class="flex flex-row">
+                      <div class="flex basis-1/2 justify-end">
+                        <div class="flex">
+                        <p>
+                         {item.quantity}
+                       </p>
+                      </div>
+                      </div>
+                      <div class="flex basis-1/2 justify-end">
+                        <div class="flex">
+                          <button on:click={() => startEditing(item)} class="ml-2">
+                            <img class="w-7 inline hover:bg-gray-200 rounded-md p-1" src="./edit-icon.svg" alt="update" />
+                          </button>
+                        </div>
+                        <div class="flex">
+                          <button on:click={() => deleteCartItem(item)} class="ml-2">
+                            <img class="w-7 inline hover:bg-gray-200 rounded-md p-1" src="./trash-can.svg" alt="update" />
+                          </button>
+                        </div>
+                      </div>
                     </div>
+                    
+                  </div>
                       {/if}
                     </td>
-                    <td class="py-2 px-4 border-b"><div class="flex justify-center">${item.price}</div></td>
+                    <td class="py-2 px-4 border-b"><div class="flex justify-center">{item.price} SATS</div></td>
                   </tr>
                 {/each}
               </tbody>
@@ -249,13 +271,13 @@
                   <td  class="py-8 px-4 border-t font-bold"><div class="flex justify-center">Total Price:</div></td>
                   <td  class="py-8 px-4 border-t font-bold"></td>
                   <td  class="py-8 px-4 border-t font-bold"></td>
-                  <td  class="py-8 px-4 border-t font-bold"><div class="flex justify-center">${totalPrice}</div></td>
+                  <td  class="py-8 px-4 border-t font-bold"><div class="flex justify-center">{totalPrice} SATS</div></td>
                 </tr>
               </tfoot>
             </table>
             <footer class="p-8">
                 <div class="mt-4 flex items-center justify-center gap-4">
-                    <a href="#" class="transform rounded-md bg-indigo-600/95 px-5 py-3 font-medium text-white transition-colors hover:bg-indigo-700">Checkout</a>
+                    <a href="/checkout" class="transform rounded-md bg-indigo-600/95 px-5 py-3 font-medium text-white transition-colors hover:bg-indigo-700">Checkout</a>
                   </div>
             </footer>
             {:else}

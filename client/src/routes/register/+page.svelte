@@ -38,7 +38,7 @@
         if (response.ok) {
           localStorage.setItem('token', data.token);
           dispatch('registerSuccess', data);
-          window.location.href = '/';
+          window.location.href = '/wallet-connection';
         } else {
           errorMessage.set(data.message);
         }
