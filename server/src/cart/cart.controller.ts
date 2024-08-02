@@ -19,7 +19,6 @@ import {
 } from '@nestjs/swagger';
 import { CartService } from './cart.service';
 import { CreateCartDto } from './dto/create-cart.dto';
-import { CheckoutCartDto } from './dto/checkout-cart.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UpdateCartDto } from './dto/update-cart.dto';
 
@@ -123,20 +122,14 @@ export class CartController {
     description: 'Cart not found or already checked out.',
   })
   @ApiBearerAuth()
-  async checkout(@Req() req, @Body() checkoutDto: CheckoutCartDto) {
+  async checkout(@Req() req) {
     try {
-      return await this.cartService.checkout(
-        +req.user.userId,
-        checkoutDto.cartId,
-      );
+      return await this.cartService.checkout(+req.user.userId);
     } catch (error) {
       if (error.response?.statusCode === HttpStatus.NOT_FOUND) {
         throw new HttpException(error.response.message, HttpStatus.NOT_FOUND);
       }
-      throw new HttpException(
-        'An error occurred during checkout',
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 }

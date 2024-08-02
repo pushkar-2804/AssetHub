@@ -91,4 +91,16 @@ export class AssetsController {
   async findOne(@Param('id') id: string) {
     return this.assetsService.findOne(+id);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('my-assets')
+  @ApiOperation({ summary: 'Get asset details' })
+  @ApiResponse({
+    status: 200,
+    description: 'Asset details retrieved successfully.',
+  })
+  @ApiBearerAuth()
+  async findMyAssets(@Req() req) {
+    return this.assetsService.findMyAssets(+req.user.userId);
+  }
 }

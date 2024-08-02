@@ -7,6 +7,7 @@ import { DatabaseService } from 'src/database/database.service';
 import { isValidCategory } from 'src/utils/enum-validation.util';
 import { CreateAssetDto } from './dto/create-asset.dto';
 import { uploadImageToCloudinary } from 'src/utils/cloudinary-image.util';
+import { AssetCategory } from 'src/enums/asset-category.enum';
 
 @Injectable()
 export class AssetService {
@@ -43,10 +44,28 @@ export class AssetService {
     return { assetId: asset.assetId, status: 'Asset created successfully' };
   }
 
-  async findAll(filters: any) {
+  async findAll(filters: {
+    price?: any;
+    category?: AssetCategory;
+    assetName?: string;
+  }) {
+    if (filters?.price) {
+      filters.price = +filters.price;
+    }
+
+    const whereClause: any = { ...filters };
+
+    if (filters?.assetName) {
+      whereClause.assetName = {
+        contains: filters.assetName,
+        mode: 'insensitive', // Case-insensitive search
+      };
+    }
+
     const assets = await this.database.asset.findMany({
-      where: filters,
+      where: whereClause,
     });
+
     return {
       assets: assets.map((asset) => ({
         assetId: asset.assetId,
@@ -74,5 +93,9 @@ export class AssetService {
       category: asset.category,
       images: asset.images,
     };
+  }
+  async findMyAssets(userId: number) {
+    const assets = await this.database.asset.findMany({ where: { userId } });
+    return assets || [];
   }
 }
