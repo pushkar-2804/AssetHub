@@ -1,46 +1,49 @@
 <!-- src/Register.svelte -->
 <script>
-  import { writable } from 'svelte/store';
-  import { createEventDispatcher } from 'svelte';
-
-  const email = writable('');
-  const password = writable('');
-  const confirmPassword = writable('');
-  const name = writable('');
-  const errorMessage = writable('');
-  const dispatch = createEventDispatcher();
-
-  let registrationData = {
-    email: '',
-    password: '',
-    confirmPassword: '',
-    name: ''
-  };
-
-  async function handleSubmit() {
-    if (registrationData.password !== registrationData.confirmPassword) {
-      errorMessage.set("Passwords do not match");
-      return;
-    }
-
-    try {
-      const response = await fetch('http://localhost:3000/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: registrationData.name,
-          email: registrationData.email,
-          password: registrationData.password
-        })
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        localStorage.setItem('token', data.token);
-        dispatch('registerSuccess', data);
-        window.location.href = '/';
-      } else {
-        errorMessage.set(data.message);
+    import { writable } from 'svelte/store';
+    import { createEventDispatcher } from 'svelte';
+  
+    const email = writable('');
+    const password = writable('');
+    const confirmPassword = writable('');
+    const name = writable('');
+    const errorMessage = writable('');
+    const dispatch = createEventDispatcher();
+  
+    let registrationData = {
+      email: '',
+      password: '',
+      confirmPassword: '',
+      name: ''
+    };
+  
+    async function handleSubmit() {
+      if (registrationData.password !== registrationData.confirmPassword) {
+        errorMessage.set("Passwords do not match");
+        return;
+      }
+  
+      try {
+        const response = await fetch('http://localhost:3000/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: registrationData.name,
+            email: registrationData.email,
+            password: registrationData.password
+          })
+        });
+  
+        const data = await response.json();
+        if (response.ok) {
+          localStorage.setItem('token', data.token);
+          dispatch('registerSuccess', data);
+          window.location.href = '/wallet-connection';
+        } else {
+          errorMessage.set(data.message);
+        }
+      } catch (error) {
+        errorMessage.set('An error occurred. Please try again.');
       }
     } catch (error) {
       errorMessage.set('An error occurred. Please try again.');

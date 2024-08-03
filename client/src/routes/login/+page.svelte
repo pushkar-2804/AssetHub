@@ -3,32 +3,14 @@
   import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
 
-  const email = writable('');
-  const password = writable('');
-  const errorMessage = writable('');
-  const dispatch = createEventDispatcher();
-
-  let loginData = {
-    email: '',
-    password: ''
-  };
-
-  async function handleSubmit() {
-    try {
-      const response = await fetch('http://localhost:3000/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(loginData)
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-
-        localStorage.setItem('token', data.token);
-        dispatch('loginSuccess', data);
-        window.location.href = '/';
-      } else {
-        errorMessage.set(data.message);
+          localStorage.setItem('token', data.token);
+          dispatch('loginSuccess', data);
+          window.location.href = '/wallet-connection';
+        } else {
+          errorMessage.set(data.message);
+        }
+      } catch (error) {
+        errorMessage.set('An error occurred. Please try again.');
       }
     } catch (error) {
       errorMessage.set('An error occurred. Please try again.');
