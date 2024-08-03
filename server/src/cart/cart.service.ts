@@ -13,56 +13,63 @@ export class CartService {
   constructor(private database: DatabaseService) {}
 
   async addToCart(userId: number, assetId: number, quantity: number) {
-    if (!assetId) {
-      throw new BadRequestException('User ID and Asset ID are required.');
-    }
+    try{
+      if (!assetId) {
+        throw new BadRequestException('User ID and Asset ID are required.');
+      }
 
-    // if cart exists
-    let cart = await this.database.cart.findFirst({
-      where: { userId },
-      include: { cartItems: { include: { asset: true } } },
-    });
-    // if not then create one
-    if (!cart) {
-      cart = await this.database.cart.create({
-        data: { userId, totalPrice: 0 },
+      // if cart exists
+      console.log('hello', assetId)
+      let cart = await this.database.cart.findFirst({
+        where: { userId },
         include: { cartItems: { include: { asset: true } } },
       });
-    }
-    if (cart) {
-      const alreadyExistInCart = cart.cartItems.filter(
-        (item) => item.asset.assetId == assetId,
-      );
-
-      if (alreadyExistInCart.length) {
-        throw new BadRequestException('Asset already present');
+      // if not then create one
+      if (!cart) {
+        cart = await this.database.cart.create({
+          data: { userId, totalPrice: 0 },
+          include: { cartItems: { include: { asset: true } } },
+        });
       }
+      if (cart) {
+        const alreadyExistInCart = cart.cartItems.filter(
+          (item) => item.asset.assetId == assetId,
+        );
+
+        if (alreadyExistInCart.length) {
+          throw new BadRequestException('Asset already present');
+        }
+      }
+
+      // find asset
+      const asset = await this.database.asset.findUnique({
+        where: { assetId },
+      });
+      if (!asset) {
+        throw new NotFoundException('Asset not found');
+      }
+
+      // create a cartItem :)
+      await this.database.cartItem.create({
+        data: {
+          cartId: cart.id,
+          assetId: asset.assetId,
+          quantity,
+        },
+      });
+      // update the cart
+      await this.database.cart.update({
+        where: { id: cart.id },
+        data: { totalPrice: cart.totalPrice + asset.price * quantity },
+      });
+
+      return { cartId: cart.id, status: 'Asset added to cart' };
     }
 
-    // find asset
-    const asset = await this.database.asset.findUnique({
-      where: { assetId },
-    });
-    if (!asset) {
-      throw new NotFoundException('Asset not found');
-    }
-
-    // create a cartItem :)
-    await this.database.cartItem.create({
-      data: {
-        cartId: cart.id,
-        assetId: asset.assetId,
-        quantity,
-      },
-    });
-    // update the cart
-    await this.database.cart.update({
-      where: { id: cart.id },
-      data: { totalPrice: cart.totalPrice + asset.price * quantity },
-    });
-
-    return { cartId: cart.id, status: 'Asset added to cart' };
-  }
+  catch (error){
+    console.log(error)
+  }}
+  
 
   async updateCart(userId: number, updateCartDto: UpdateCartDto) {
     const { cartItemId, quantity } = updateCartDto;

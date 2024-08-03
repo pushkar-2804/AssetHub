@@ -42,6 +42,7 @@ export class AssetService {
     });
 
     return { assetId: asset.assetId, status: 'Asset created successfully' };
+    console.log(asset)
   }
 
   async findAll(filters: {

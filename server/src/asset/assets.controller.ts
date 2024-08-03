@@ -19,12 +19,13 @@ import {
   ApiOperation,
   ApiResponse,
   ApiQuery,
-  ApiConsumes,
+  ApiConsumes, 
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { storage } from 'src/utils/temp-file-storage.util';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+
 
 @ApiTags('assets')
 @Controller('assets')
