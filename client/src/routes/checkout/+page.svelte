@@ -12,7 +12,6 @@
     const isAuthenticated = writable(false);
     const userMail = writable('');
     const userId = writable('');
-    const cartId = writable('');
     const successMessage = writable('');
   
     function checkAuthToken() {
@@ -96,11 +95,7 @@
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            userId: $userId,
-            cartId: $cartId
-        })
+          }
         });
   
         if (!response.ok) {
@@ -110,7 +105,6 @@
         const data = await response.json();
         successMessage.set('Items Purchased successfully!');
         errorMessage.set('');
-        console.log($cartId);
         console.log(data)
 
         setTimeout(function(){
@@ -121,7 +115,6 @@
         console.error('Error payment failed:', error);
         errorMessage.set('Payment Failed. Please try again.');
         successMessage.set('');
-        console.log($cartId);
       }
     }
   
@@ -184,10 +177,13 @@
             <a href="/" class="block py-2 px-3 md:p-0 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:dark:text-blue-500" aria-current="page">Home</a>
           </li>
           <li>
-            <a href="#" class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Asset Listing</a>
+            <a href="/asset-listing" class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Asset Listing</a>
           </li>
           <li>
-            <a href="#" class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Browse Assets</a>
+            <a href="/asset-browsing" class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Browse Assets</a>
+          </li>
+          <li>
+            <a href="/my-assets" class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">My Assets</a>
           </li>
           <li>
             <a href="/cart" class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">View Cart</a>
@@ -237,9 +233,6 @@
                     <div class="flex">
                         <h1>User ID: {$userId}</h1>
                     </div>
-                    <div class="flex">
-                        <h1>Cart ID: {$cartId}</h1>
-                    </div>
                 </div>
               <footer class="p-8">
                 <div class="mt-4 flex items-center justify-center gap-4">
@@ -264,7 +257,7 @@
               </div>
               <footer class="p-8">
                   <div class="mt-4 flex items-center justify-center gap-4">
-                      <a href="#" class="transform rounded-md bg-indigo-600/95 px-5 py-3 font-medium text-white transition-colors hover:bg-indigo-700">Click here to Browse Assets</a>
+                      <a href="/asset-browsing" class="transform rounded-md bg-indigo-600/95 px-5 py-3 font-medium text-white transition-colors hover:bg-indigo-700">Click here to Browse Assets</a>
                     </div>
               </footer>
               {/if}

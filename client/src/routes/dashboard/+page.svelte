@@ -145,7 +145,7 @@
               </a>
             </li>
             <li class="min-w-max">
-              <a href="#" class="bg group flex items-center space-x-4 rounded-full px-4 py-3 text-gray-600">
+              <a href="/asset-browsing" class="bg group flex items-center space-x-4 rounded-full px-4 py-3 text-gray-600">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                   <path class="fill-current text-gray-300 group-hover:text-cyan-300" fill-rule="evenodd" d="M2 6a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1H8a3 3 0 00-3 3v1.5a1.5 1.5 0 01-3 0V6z" clip-rule="evenodd" />
                   <path class="fill-current text-gray-600 group-hover:text-cyan-600" d="M6 12a2 2 0 012-2h8a2 2 0 012 2v2a2 2 0 01-2 2H2h2a2 2 0 002-2v-2z" />
@@ -154,7 +154,16 @@
               </a>
             </li>
             <li class="min-w-max">
-              <a href="#" class="group flex items-center space-x-4 rounded-md px-4 py-3 text-gray-600">
+              <a href="/my-assets" class="bg group flex items-center space-x-4 rounded-full px-4 py-3 text-gray-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path class="fill-current text-gray-300 group-hover:text-cyan-300" fill-rule="evenodd" d="M2 6a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1H8a3 3 0 00-3 3v1.5a1.5 1.5 0 01-3 0V6z" clip-rule="evenodd" />
+                  <path class="fill-current text-gray-600 group-hover:text-cyan-600" d="M6 12a2 2 0 012-2h8a2 2 0 012 2v2a2 2 0 01-2 2H2h2a2 2 0 002-2v-2z" />
+                </svg>
+                <span class="group-hover:text-gray-700">My Assets</span>
+              </a>
+            </li>
+            <li class="min-w-max">
+              <a href="/asset-listing" class="group flex items-center space-x-4 rounded-md px-4 py-3 text-gray-600">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                   <path class="fill-current text-gray-600 group-hover:text-cyan-600" fill-rule="evenodd" d="M2 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 002 2H4a2 2 0 01-2-2V5zm3 1h6v4H5V6zm6 6H5v2h6v-2z" clip-rule="evenodd" />
                   <path class="fill-current text-gray-300 group-hover:text-cyan-300" d="M15 7h1a2 2 0 012 2v5.5a1.5 1.5 0 01-3 0V7z" />
@@ -207,10 +216,13 @@
           <a href="/" class="mx-1.5 py-2 px-3 md:p-0 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:dark:text-blue-500" aria-current="page">Home</a>
         </div>
         <div class="py-2 px-3">
-          <a href="#" class="mx-1.5 py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Asset Listing</a>
+          <a href="/asset-listing" class="mx-1.5 py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Asset Listing</a>
         </div>
         <div class="py-2 px-3">
-          <a href="#" class="mx-1.5 py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Browse Assets</a>
+          <a href="/asset-browsing" class="mx-1.5 py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Browse Assets</a>
+        </div>
+        <div class="py-2 px-3">
+          <a href="/my-assets" class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">My Assets</a>
         </div>
         <div class="py-2 px-3">
           <a href="/cart" class="mx-1.5 py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">View Cart</a>
@@ -229,8 +241,8 @@
                     <p class="mt-3 mx-5 text-lg leading-relaxed text-slate-400">Welcome to AssetHub, your secure online marketplace for buying and selling assets using cryptocurrency seamlessly bridging traditional and digital markets.</p>
                   </div>
                   <div class="mt-6 flex items-center justify-center gap-4">
-                    <a href="#" class="transform rounded-md bg-indigo-600/95 px-5 py-3 font-medium text-white transition-colors hover:bg-indigo-700">Browse Assets</a>
-                    <a href="#" class="transform rounded-md border border-slate-200 px-7 py-3 font-medium text-slate-900 transition-colors hover:bg-slate-50"> List Assets </a>
+                    <a href="/asset-browsing" class="transform rounded-md bg-indigo-600/95 px-5 py-3 font-medium text-white transition-colors hover:bg-indigo-700">Browse Assets</a>
+                    <a href="/asset-listing" class="transform rounded-md border border-slate-200 px-7 py-3 font-medium text-slate-900 transition-colors hover:bg-slate-50"> List Assets </a>
                   </div>
                 </div>
               </section>
@@ -270,7 +282,7 @@
                         </table>
                         {:else}
                         <div class="flex rounded-lg py-1.5 justify-center w-full h-10 mt-20">
-                            <p class="mx-3 text-bold text-lg leading-relaxed text-slate-800">Looks like your cart is empty!  <a href="#" class="text-blue-500">Click Here</a> to check out our store</p>
+                            <p class="mx-3 text-bold text-lg leading-relaxed text-slate-800">Looks like your cart is empty!  <a href="/asset-browsing" class="text-blue-500">Click Here</a> to check out our store</p>
                         </div>
                         
                         {/if}
