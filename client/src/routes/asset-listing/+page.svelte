@@ -31,6 +31,7 @@
   const isAuthenticated = writable(false);
   const userMail = writable('');
   const errorMessage = writable('');
+  const successMessage = writable('');
   let token: string | null = null;
 
   onMount(() => {
@@ -106,6 +107,8 @@
 
       const result = await response.json();
       console.log('Asset created successfully:', result);
+      successMessage.set('Asset Listed successfully!');
+        errorMessage.set('');
 
       // Reset form fields
       assetName.set('');
@@ -125,7 +128,7 @@
 
 
 
-<div class="grow h-screen bg-gray-100">
+<div class="grow bg-gray-100 pb-5">
   <nav class="bg-white border-gray-200 dark:bg-gray-900">
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
     <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
@@ -197,7 +200,7 @@
 
 
 <div
-class="mt-10 pt-10 w-full max-w-xl p-12 mx-auto rounded-lg shadow-xl dark:bg-white/10 bg-white/30 ring-1 ring-gray-900/5 backdrop-blur-lg"
+class="mt-10 mb-8 pt-10 w-full max-w-xl p-12 mx-auto rounded-lg shadow-xl dark:bg-white/10 bg-white/30 ring-1 ring-gray-900/5 backdrop-blur-lg"
 >
 <form bind:this={form} on:submit|preventDefault={handleSubmit}>
   <div class="flex flex-wrap -mx-3 mb-2">
@@ -292,12 +295,29 @@ class="mt-10 pt-10 w-full max-w-xl p-12 mx-auto rounded-lg shadow-xl dark:bg-whi
       />
     </div>   
     <br> 
-    <button
+    <!-- <button
       type="submit"
       class="bg-blue-500 hover:bg-gray-700 text-white font-bold mt-5 ml-2 px-2 rounded " on:click={handleSubmit}
     >
       Create Asset
-    </button>
+    </button> -->
+    <footer class="p-8 w-full">
+      <div class="mt-4 flex items-center justify-center gap-4">
+          {#if $successMessage}
+            <p style="color: green;">{$successMessage}</p>
+          {/if}
+          {#if $errorMessage}
+            <p style="color: red;">{$errorMessage}</p>
+          {/if}
+      </div>
+        <div class="mt-4 flex items-center justify-center gap-4">
+            <form on:submit={handleSubmit}>
+              <button type="submit" class="submit-button text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" role="menuitem">
+                Create Asset
+              </button>
+            </form>
+          </div>
+    </footer>
   </div>
 
   {#if form?.success}
