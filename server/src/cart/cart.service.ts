@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { UpdateCartDto } from './dto/update-cart.dto';
-import { handlePayment } from 'src/utils/neucron-wallet.util';
+import { handlePayment } from '../utils/neucron-wallet.util';
 import * as CryptoJS from 'crypto-js';
 
 @Injectable()
@@ -13,13 +13,13 @@ export class CartService {
   constructor(private database: DatabaseService) {}
 
   async addToCart(userId: number, assetId: number, quantity: number) {
-    try{
+    try {
       if (!assetId) {
         throw new BadRequestException('User ID and Asset ID are required.');
       }
 
       // if cart exists
-      console.log('hello', assetId)
+      console.log('hello', assetId);
       let cart = await this.database.cart.findFirst({
         where: { userId },
         include: { cartItems: { include: { asset: true } } },
@@ -64,12 +64,10 @@ export class CartService {
       });
 
       return { cartId: cart.id, status: 'Asset added to cart' };
+    } catch (error) {
+      console.log(error);
     }
-
-  catch (error){
-    console.log(error)
-  }}
-  
+  }
 
   async updateCart(userId: number, updateCartDto: UpdateCartDto) {
     const { cartItemId, quantity } = updateCartDto;

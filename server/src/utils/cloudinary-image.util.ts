@@ -1,4 +1,4 @@
-import cloudinary from 'src/config/cloudinary.config';
+import cloudinary from '../config/cloudinary.config';
 import { unlinkFile } from './temp-file-storage.util';
 
 export async function uploadImageToCloudinary(image: string): Promise<string> {
