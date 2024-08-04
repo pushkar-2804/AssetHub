@@ -7,6 +7,8 @@ import { DatabaseModule } from './database/database.module';
 import { AssetModule } from './asset/asset.module';
 import { CartModule } from './cart/cart.module';
 import { WalletModule } from './wallet/wallet.module';
+import { AppService } from './app.service';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -18,6 +20,7 @@ import { WalletModule } from './wallet/wallet.module';
     UsersModule,
     WalletModule,
   ],
-  providers: [],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
