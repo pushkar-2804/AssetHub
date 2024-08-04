@@ -175,7 +175,7 @@ onMount(() => {
     {:else}
     <div class="mt-6 flex items-center justify-center gap-4">
       <a href="/asset-browsing" class="transform rounded-md bg-indigo-600/95 px-5 py-3 font-medium text-white transition-colors hover:bg-indigo-700">Browse Assets</a>
-      <a href="/assest-listing" class="transform rounded-md border border-slate-200 px-7 py-3 font-medium text-slate-900 transition-colors hover:bg-slate-50"> List Assets </a>
+      <a href="/asset-listing" class="transform rounded-md border border-slate-200 px-7 py-3 font-medium text-slate-900 transition-colors hover:bg-slate-50"> List Assets </a>
     </div>
     {/if}
   </div>

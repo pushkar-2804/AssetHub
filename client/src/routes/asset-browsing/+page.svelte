@@ -151,7 +151,7 @@
 
 
 
-<div class="grow bg-gray-100">
+<div class=" min-h-full bg-gray-100">
   <nav class="bg-white border-gray-200 dark:bg-gray-900">
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
     <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
@@ -255,7 +255,7 @@
       <div class="space-y-1">
         <h1 class="text-4xl font-bold mb-5 text-gray-900 dark:text-white">Browse Assets</h1>
       </div>
-      <div class="w-full">
+      <div class="w-full pb-14">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-blue-400">
           <tr>

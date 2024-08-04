@@ -7,6 +7,13 @@
     const isAuthenticated = writable(false);
     const userMail = writable('');
     const errorMessage = writable('');
+
+    function handleLogout() {
+      localStorage.removeItem('token');
+  
+      // Redirect to the home page
+      window.location.href = '/';
+    }
   
     let options = [
         { text: 'GADGET' },
@@ -34,8 +41,10 @@
       const token = localStorage.getItem('token'); // Retrieve JWT token from local storage
   
       if (!token) {
-        console.error('No JWT token found');
-        return;
+        isAuthenticated.set(false);
+        window.location.href = '/login';
+      } else {
+        isAuthenticated.set(true);
       }
   
       try {
@@ -162,7 +171,7 @@
             {/if}
             <div class="py-1">
               <a href="/dashboard" class="text-gray-700 flex justify-between w-full px-4 py-2 text-sm leading-5 text-left"  role="menuitem" >Dashboard</a>
-              <a href="/wallet-connection" class="text-gray-700 flex justify-between w-full px-4 py-2 text-sm leading-5 text-left"  role="menuitem" >Wallet connection</a>
+              <a href="wallet-connection" class="text-gray-700 flex justify-between w-full px-4 py-2 text-sm leading-5 text-left"  role="menuitem" >Wallet connection</a>
               <!-- <span role="menuitem" tabindex="-1" class="flex justify-between w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 cursor-not-allowed opacity-50" aria-disabled="true">New feature (soon)</span> -->
               <a href="/profile-settings" class="text-gray-700 flex justify-between w-full px-4 py-2 text-sm leading-5 text-left" role="menuitem" >Account settings</a></div>
             <div class="py-1">
@@ -198,7 +207,7 @@
       </div>
     </nav>
   
-    <div class="mt-10 pt-10 w-full max-w-xl p-5 mx-auto rounded-lg shadow-xl dark:bg-white/10 bg-white/30 ring-1 ring-gray-900/5 backdrop-blur-lg">
+    <div class="mt-10 pt-10 w-4/5 p-5 mx-auto rounded-lg shadow-xl dark:bg-white/10 bg-white/30 ring-1 ring-gray-900/5 backdrop-blur-lg">
     <form on:submit={handleFilter} class="mb-6">
       <div class="mb-4">
         <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
@@ -219,53 +228,59 @@
         <label for="maxPrice" class="block text-sm font-medium text-gray-700">Max Price</label>
         <input type="number" name="maxPrice" id="maxPrice" class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
       </div> -->
-      <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded">Filter</button>
+      <div class="flex justify-center">
+        <div class="">
+          <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded">Filter</button>
+        </div>
+      </div>
     </form>
     </div>
   
   
-    <div class="mt-10 pt-10 w-full max-w-xl p-5 mx-auto rounded-lg shadow-xl dark:bg-white/10 bg-white/30 ring-1 ring-gray-900/5 backdrop-blur-lg">
-      <div class="flex items-center justify-between mb-4">
+    <div class="mt-10 pt-10 w-4/5 p-5 mx-auto rounded-lg shadow-xl dark:bg-white/10 bg-white/30 ring-1 ring-gray-900/5 backdrop-blur-lg">
+      <div class="flex flex-col items-center justify-between mb-4">
         <div class="space-y-1">
           <h1 class="text-4xl font-bold mb-5 text-gray-900 dark:text-white">My Assets</h1>
         </div>
+        <div class="w-full">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-blue-400">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Name</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Description</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Price</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Category</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Image</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              {#if $assets.length === 0}
+                <tr>
+                  <td colspan="6" class="px-6 py-4 text-center text-gray-700">No assets available at the moment.</td>
+                </tr>
+              {/if}
+              <!-- {#each $assets as asset (asset.id)} -->
+              {#each $assets as asset (asset.assetId || `asset-${asset.assetName}`)}
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">{asset.assetName}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">{asset.description}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">{asset.price}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">{asset.category}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <img src={asset.images} alt={asset.assetName} class="w-20 h-20 object-cover" />
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <button on:click={() => handleAddToCart(asset.assetId)} class="bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded">Add to Cart</button>
+                    <button on:click={() => handleViewAsset(asset)} class="bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded">View Asset</button>
+                  </td>
+                </tr>
+              {/each}
+            </tbody>
+          </table>
+        </div>
       </div>
   
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-blue-400">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Name</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Description</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Price</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Category</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Image</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          {#if $assets.length === 0}
-            <tr>
-              <td colspan="6" class="px-6 py-4 text-center text-gray-700">No assets available at the moment.</td>
-            </tr>
-          {/if}
-          <!-- {#each $assets as asset (asset.id)} -->
-          {#each $assets as asset (asset.assetId || `asset-${asset.assetName}`)}
-            <tr>
-              <td class="px-6 py-4 whitespace-nowrap">{asset.assetName}</td>
-              <td class="px-6 py-4 whitespace-nowrap">{asset.description}</td>
-              <td class="px-6 py-4 whitespace-nowrap">{asset.price}</td>
-              <td class="px-6 py-4 whitespace-nowrap">{asset.category}</td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <img src={asset.images} alt={asset.assetName} class="w-20 h-20 object-cover" />
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <button on:click={() => handleAddToCart(asset.assetId)} class="bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded">Add to Cart</button>
-                <button on:click={() => handleViewAsset(asset)} class="bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded">View Asset</button>
-              </td>
-            </tr>
-          {/each}
-        </tbody>
-      </table>
   
   
       {#if $showModal}
