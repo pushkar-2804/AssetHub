@@ -43,7 +43,8 @@
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "vercel": "^35.2.3"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
