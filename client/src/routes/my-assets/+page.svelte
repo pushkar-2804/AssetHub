@@ -70,9 +70,38 @@
         console.error('Error fetching assets:', error);
       }
     }
+
+  async function auth(){
+    const token = localStorage.getItem('token');
+      if (!token) {
+        isAuthenticated.set(false);
+        window.location.href = '/login';
+      } else {
+        isAuthenticated.set(true);
+      }
+
+      try {
+    const response = await fetch('http://localhost:3000/users/profile', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    if (response.ok) {
+      const userMailData = await response.json();
+      userMail.set(userMailData.email);
+    } else {
+      errorMessage.set('Failed to fetch user details. Please log in again.');
+    }
+  } catch (error) {
+    errorMessage.set('An error occurred. Please try again.');
+  }
+  }
   
     onMount(() => {
       fetchMyAssets();
+      auth();
     });
   
     const handleViewAsset = (asset) => {
@@ -207,7 +236,7 @@
       </div>
     </nav>
   
-    <div class="mt-10 pt-10 w-4/5 p-5 mx-auto rounded-lg shadow-xl dark:bg-white/10 bg-white/30 ring-1 ring-gray-900/5 backdrop-blur-lg">
+    <div class="mt-10 pt-10 w-4/5 p-5 mx-auto rounded-lg shadow-xl dark:bg-white/10 bg-white/30 ring-1 ring-gray-900/5 ">
     <form on:submit={handleFilter} class="mb-6">
       <div class="mb-4">
         <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
@@ -302,3 +331,11 @@
     {/if}
     </div> 
   </div>
+
+
+  <style>
+    .dropdown:focus-within .dropdown-menu {
+      /* @apply block; */
+      display:block;
+    }
+        </style>

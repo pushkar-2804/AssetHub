@@ -38,7 +38,7 @@
      auth();
     });
   
-  function auth(){
+  async function auth(){
     const token = localStorage.getItem('token');
       if (!token) {
         isAuthenticated.set(false);
@@ -46,7 +46,25 @@
       } else {
         isAuthenticated.set(true);
       }
+
+      try {
+    const response = await fetch('http://localhost:3000/users/profile', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    if (response.ok) {
+      const userMailData = await response.json();
+      userMail.set(userMailData.email);
+    } else {
+      errorMessage.set('Failed to fetch user details. Please log in again.');
     }
+  } catch (error) {
+    errorMessage.set('An error occurred. Please try again.');
+  }
+  }
 
   async function handleSubmit(event: Event) {
     console.log(token)
@@ -288,3 +306,10 @@ class="mt-10 pt-10 w-full max-w-xl p-12 mx-auto rounded-lg shadow-xl dark:bg-whi
 </form>
 </div>
 </div>
+
+<style>
+  .dropdown:focus-within .dropdown-menu {
+    /* @apply block; */
+    display:block;
+  }
+      </style>

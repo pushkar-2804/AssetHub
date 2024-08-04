@@ -40,16 +40,44 @@
       dispatch('logout');
 }
 
+async function fetchUserDetails() {
+
+const token = localStorage.getItem('token'); // Retrieve JWT token from local storage
+
+if (!token) {
+    isAuthenticated.set(false);
+    window.location.href = '/login';
+  } else {
+    isAuthenticated.set(true);
+    console.log({$isAuthenticated})
+  }
+
+try{
+    const response = await fetch('http://localhost:3000/users/profile', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    if (response.ok){
+      const userMailData = await response.json();
+      console.log(userMail);
+      userMail.set(userMailData.email);
+      // isAuthenticated.set(true);
+    } else {
+      // isAuthenticated.set(false);
+      errorMessage.set('Failed to fetch user details. Please log in again.');
+    }
+  } catch (error) {
+    // isAuthenticated.set(false);
+    errorMessage.set('An error occurred. Please try again.');
+  }
+}
+
   async function fetchAssets() {
     const userId = 1; // Replace with actual userId retrieval logic
-    const token = localStorage.getItem('token'); // Retrieve JWT token from local storage
 
-    if (!token) {
-        isAuthenticated.set(false);
-        window.location.href = '/login';
-      } else {
-        isAuthenticated.set(true);
-      }
 
     try {
       const response = await fetch('http://localhost:3000/assets/browse',{
@@ -78,6 +106,7 @@
 
   onMount(() => {
     fetchAssets();
+    fetchUserDetails();
   });
 
   const handleViewAsset = (asset) => {
@@ -204,10 +233,10 @@
           <a href="/" class="block py-2 px-3 md:p-0 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:dark:text-blue-500" aria-current="page">Home</a>
         </li>
         <li>
-          <a href="/asset-listing" class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Asset Listing</a>
+          <a href="asset-listing" class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Asset Listing</a>
         </li>
         <li>
-          <a href="/asset-browsing" class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Browse Assets</a>
+          <a href="asset-browsing" class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Browse Assets</a>
         </li>
         <li>
           <a href="/my-assets" class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">My Assets</a>
@@ -220,7 +249,7 @@
     </div>
   </nav>
 
-  <div class="mt-10 pt-10 w-4/5 p-5 mx-auto rounded-lg shadow-xl dark:bg-white/10 bg-white/30 ring-1 ring-gray-900/5 backdrop-blur-lg">
+  <div class="mt-10 pt-10 w-4/5 p-5 mx-auto rounded-lg shadow-xl dark:bg-white/10 bg-white/30 ring-1 ring-gray-900/5">
   <form on:submit={handleFilter} class="mb-6">
     <div class="mb-4 w-full">
       <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
@@ -316,3 +345,11 @@
   {/if}
   </div> 
 </div>
+
+
+<style>
+  .dropdown:focus-within .dropdown-menu {
+    /* @apply block; */
+    display:block;
+  }
+      </style>
