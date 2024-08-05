@@ -26,7 +26,7 @@
 
         localStorage.setItem('token', data.token);
         dispatch('loginSuccess', data);
-        window.location.href = '/wallet-connection';
+        window.location.href = '/';
       } else {
         errorMessage.set(data.message);
       }
