@@ -293,7 +293,9 @@
               {#each $assets as asset (asset.assetId || `asset-${asset.assetName}`)}
                 <tr>
                   <td class="px-6 py-4 whitespace-nowrap">{asset.assetName}</td>
-                  <td class="px-6 py-4 whitespace-nowrap">{asset.description}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    {asset.description.length > 30 ? `${asset.description.slice(0, 30)}...` : asset.description}
+                  </td>
                   <td class="px-6 py-4 whitespace-nowrap">{asset.price}</td>
                   <td class="px-6 py-4 whitespace-nowrap">{asset.category}</td>
                   <td class="px-6 py-4 whitespace-nowrap">
