@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import Modal from "$lib/Modal.svelte";
+  import Modal from "../../lib/Modal.svelte";
   import { goto } from '$app/navigation';
   import { writable } from 'svelte/store';
   import { createEventDispatcher } from 'svelte';
@@ -53,7 +53,7 @@ if (!token) {
   }
 
 try{
-    const response = await fetch('http://localhost:3000/users/profile', {
+    const response = await fetch('https://assethub-p926.onrender.com/users/profile', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -78,9 +78,11 @@ try{
   async function fetchAssets() {
     const userId = 1; // Replace with actual userId retrieval logic
 
+    const token = localStorage.getItem('token'); // Retrieve JWT token from local storage
+
 
     try {
-      const response = await fetch('http://localhost:3000/assets/browse',{
+      const response = await fetch('https://assethub-p926.onrender.com/assets/browse',{
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -96,6 +98,7 @@ try{
       // Ensure data is an object with an `assets` property that is an array
       if (data && Array.isArray(data.assets)) {
         assets.set(data.assets);
+        console.log({$assets})
       } else {
         console.error('Fetched data is not in the expected format:', data);
       }
@@ -124,7 +127,7 @@ try{
     }
 
     try {
-      const response = await fetch('http://localhost:3000/cart/add', {
+      const response = await fetch('https://assethub-p926.onrender.com/cart/add', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

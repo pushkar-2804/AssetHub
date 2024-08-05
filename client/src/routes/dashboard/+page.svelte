@@ -45,7 +45,7 @@
   }
 
   try {
-    const response = await fetch('http://localhost:3000/auth/profile', {
+    const response = await fetch('https://assethub-p926.onrender.com/auth/profile', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -68,7 +68,7 @@
   }
 
   try{
-    const response = await fetch('http://localhost:3000/users/profile', {
+    const response = await fetch('https://assethub-p926.onrender.com/users/profile', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -98,7 +98,7 @@
 
   async function fetchUserCart(){
     try {
-      const response = await fetch(`http://localhost:3000/cart/view`, {
+      const response = await fetch(`https://assethub-p926.onrender.com/cart/view`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,

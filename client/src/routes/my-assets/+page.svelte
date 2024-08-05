@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import Modal from "$lib/Modal.svelte";
+    import Modal from "../../lib/Modal.svelte";
     import { goto } from '$app/navigation';
     import { writable } from 'svelte/store';
   
@@ -48,7 +48,7 @@
       }
   
       try {
-        const response = await fetch('http://localhost:3000/assets/my-assets', {
+        const response = await fetch('https://assethub-p926.onrender.com/assets/my-assets', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -81,7 +81,7 @@
       }
 
       try {
-    const response = await fetch('http://localhost:3000/users/profile', {
+    const response = await fetch('https://assethub-p926.onrender.com/users/profile', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -119,7 +119,7 @@
       }
   
       try {
-        const response = await fetch('http://localhost:3000/cart/add', {
+        const response = await fetch('https://assethub-p926.onrender.com/cart/add', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

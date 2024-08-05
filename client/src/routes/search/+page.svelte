@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import Modal from "$lib/Modal.svelte";
+  import Modal from "../../lib/Modal.svelte";
   import { goto } from '$app/navigation';
   import { writable } from 'svelte/store';
 
@@ -42,7 +42,7 @@
     }
 
     try {
-      const response = await fetch('http://localhost:3000/cart/add', {
+      const response = await fetch('https://assethub-p926.onrender.com/cart/add', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -100,7 +100,7 @@
     console.log('Fetching assets with:', { price, category }); // Debugging output
 
     try {
-      const response = await fetch(`http://localhost:3000/assets/browse?${new URLSearchParams({ price, category }).toString()}`, {
+      const response = await fetch(`https://assethub-p926.onrender.com/assets/browse?${new URLSearchParams({ price, category }).toString()}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -155,7 +155,7 @@
             {/if}
             <div class="py-1">
               <a href="/dashboard" class="text-gray-700 flex justify-between w-full px-4 py-2 text-sm leading-5 text-left" role="menuitem">Dashboard</a>
-              <a href="#" class="text-gray-700 flex justify-between w-full px-4 py-2 text-sm leading-5 text-left" role="menuitem">Wallet connection</a>
+              <a href="/wallet-connection" class="text-gray-700 flex justify-between w-full px-4 py-2 text-sm leading-5 text-left" role="menuitem">Wallet connection</a>
               <a href="/profile-settings" class="text-gray-700 flex justify-between w-full px-4 py-2 text-sm leading-5 text-left" role="menuitem">Account settings</a>
             </div>
             <div class="py-1">
@@ -186,7 +186,7 @@
     </div>
   </nav>
 
-  <div class="mt-10 pt-10 w-full max-w-xl p-5 mx-auto rounded-lg shadow-xl dark:bg-white/10 bg-white/30 ring-1 ring-gray-900/5 backdrop-blur-lg">
+  <div class="mt-10 pt-10 w-4/5 p-5 mx-auto rounded-lg shadow-xl dark:bg-white/10 bg-white/30 ring-1 ring-gray-900/5 backdrop-blur-lg">
     <div class="flex items-center justify-between mb-4">
       <div class="space-y-1">
         <h1 class="text-4xl font-bold mb-5 text-gray-900 dark:text-white">Filtered Assets</h1>

@@ -1,7 +1,7 @@
 <script>
     import { createEventDispatcher, onMount } from "svelte";
     import { writable } from 'svelte/store';
-    import Footer from '$lib/Footer.svelte';
+    import Footer from '../../lib/Footer.svelte';
   
     let cartItems = [];
     let totalPrice = 0;
@@ -38,7 +38,7 @@
       }
   
     try {
-      const response = await fetch('http://localhost:3000/users/profile', {
+      const response = await fetch('https://assethub-p926.onrender.com/users/profile', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -68,7 +68,7 @@
       }
   
       try {
-        const response = await fetch('http://localhost:3000/cart/view', {
+        const response = await fetch('https://assethub-p926.onrender.com/cart/view', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -90,7 +90,7 @@
 
     async function handleCheckout(){
         try {
-        const response = await fetch('http://localhost:3000/cart/checkout', {
+        const response = await fetch('https://assethub-p926.onrender.com/cart/checkout', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,

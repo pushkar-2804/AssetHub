@@ -1,7 +1,7 @@
 <script>
     import { createEventDispatcher, onMount } from "svelte";
     import { writable, get } from 'svelte/store';
-    import Footer from '$lib/Footer.svelte';
+    import Footer from '../../lib/Footer.svelte';
       import Layout from "../+layout.svelte";
   
     let cartItems = [];
@@ -43,7 +43,7 @@
       }
   
     try {
-      const response = await fetch('http://localhost:3000/users/profile', {
+      const response = await fetch('https://assethub-p926.onrender.com/users/profile', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -64,7 +64,7 @@
     async function handleSubmit(){
   
     try {
-      const response = await fetch('http://localhost:3000/wallet/get-wallet-list', {
+      const response = await fetch('https://assethub-p926.onrender.com/wallet/get-wallet-list', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -88,7 +88,7 @@
     async function connectWallet() {
     try {
       const walletId = $selectedWallet;
-      const response = await fetch('http://localhost:3000/wallet/connect-wallet', {
+      const response = await fetch('https://assethub-p926.onrender.com/wallet/connect-wallet', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
