@@ -34,7 +34,8 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"svelte-spa-router": "^4.0.1",
-  		"svelte-kit": "^1.0.0"
+		"@sveltejs/adapter-vercel": "^5.4.1",
+		"svelte-kit": "^1.0.0",
+		"svelte-spa-router": "^4.0.1"
 	}
 }
