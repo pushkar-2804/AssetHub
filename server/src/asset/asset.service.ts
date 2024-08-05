@@ -3,11 +3,11 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { DatabaseService } from 'src/database/database.service';
-import { isValidCategory } from 'src/utils/enum-validation.util';
+import { DatabaseService } from '../database/database.service';
+import { isValidCategory } from '../utils/enum-validation.util';
 import { CreateAssetDto } from './dto/create-asset.dto';
-import { uploadImageToCloudinary } from 'src/utils/cloudinary-image.util';
-import { AssetCategory } from 'src/enums/asset-category.enum';
+import { uploadImageToCloudinary } from '../utils/cloudinary-image.util';
+import { AssetCategory } from '../enums/asset-category.enum';
 
 @Injectable()
 export class AssetService {
@@ -42,7 +42,7 @@ export class AssetService {
     });
 
     return { assetId: asset.assetId, status: 'Asset created successfully' };
-    console.log(asset)
+    console.log(asset);
   }
 
   async findAll(filters: {

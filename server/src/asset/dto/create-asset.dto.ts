@@ -9,7 +9,7 @@ import {
   IsNumber,
   IsEnum,
 } from 'class-validator';
-import { AssetCategory } from 'src/enums/asset-category.enum';
+import { AssetCategory } from '../../enums/asset-category.enum';
 
 export class CreateAssetDto {
   @ApiProperty({ example: 'Asset Name', description: 'Name of the asset' })

@@ -19,7 +19,7 @@ import {
 } from '@nestjs/swagger';
 import { CartService } from './cart.service';
 import { CreateCartDto } from './dto/create-cart.dto';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UpdateCartDto } from './dto/update-cart.dto';
 
 @ApiTags('cart')
