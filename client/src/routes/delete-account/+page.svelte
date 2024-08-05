@@ -34,7 +34,7 @@ else {
 }
 
 try {
-const response = await fetch('http://localhost:3000/auth/profile', {
+const response = await fetch('https://assethub-p926.onrender.com/auth/profile', {
   method: 'POST',
   headers: {
     'Authorization': `Bearer ${token}`,
@@ -68,7 +68,7 @@ async function handleSubmit() {
 
 
 try {
-  const response = await fetch('http://localhost:3000/users/'+ userId, {
+  const response = await fetch('https://assethub-p926.onrender.com/users/'+ userId, {
     method: 'DELETE',
     headers: { 'Authorization': `Bearer ${token}`,'Content-Type': 'application/json' }
   });

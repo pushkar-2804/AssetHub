@@ -2,7 +2,7 @@
   import { createEventDispatcher } from 'svelte';
   import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
-  import Footer from "$lib/Footer.svelte";
+  import Footer from "../lib/Footer.svelte";
 
   const errorMessage = writable('');
   const isAuthenticated = writable(false);
@@ -38,7 +38,7 @@
   }
 
   try {
-    const response = await fetch('http://localhost:3000/auth/profile', {
+    const response = await fetch('https://assethub-p926.onrender.com/auth/profile', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -60,7 +60,7 @@
   }
 
   try{
-    const response = await fetch('http://localhost:3000/users/profile', {
+    const response = await fetch('https://assethub-p926.onrender.com/users/profile', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,

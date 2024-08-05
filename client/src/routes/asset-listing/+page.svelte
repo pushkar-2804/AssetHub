@@ -49,7 +49,7 @@
       }
 
       try {
-    const response = await fetch('http://localhost:3000/users/profile', {
+    const response = await fetch('https://assethub-p926.onrender.com/users/profile', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -93,7 +93,7 @@
     }
 
     try {
-      const response = await fetch('http://localhost:3000/assets/list', {
+      const response = await fetch('https://assethub-p926.onrender.com/assets/list', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
