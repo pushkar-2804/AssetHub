@@ -23,6 +23,7 @@ model User {
   walletId  Int?
   cart      Cart?
   purchases Purchases[]
+  orders      Order[]
 }
 
 model Wallet {
@@ -49,6 +50,7 @@ model Asset {
   user        User       @relation(fields: [userId], references: [id])
   userId      Int
   cartItems   CartItem[]
+  orders      Order[] 
 }
 
 model Cart {
@@ -57,6 +59,18 @@ model Cart {
   userId     Int         @unique
   cartItems  CartItem[]
   totalPrice Int  
+}
+
+model Order {
+  id          Int       @id @default(autoincrement())
+  user        User      @relation(fields: [userId], references: [id])
+  userId      Int
+  asset       Asset     @relation(fields: [assetId], references: [assetId])
+  assetId     Int
+  quantity    Int
+  orderDate   DateTime  @default(now())
+  totalPrice  Int
+  bitcoinTransactionId String?
 }
 
 model CartItem {
