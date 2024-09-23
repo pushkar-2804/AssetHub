@@ -46,6 +46,7 @@ export async function handlePayment(
         },
       },
     );
+    // console.log(txnDetails.data.data.txid);
     return txnDetails.data.data.txid;
   } catch (error) {
     throw error;

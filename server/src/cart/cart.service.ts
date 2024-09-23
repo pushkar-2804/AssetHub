@@ -189,6 +189,19 @@ export class CartService {
           cartId,
         );
         //         const txId = Math.floor(Math.random() * 1000000);
+        console.log(txId);
+
+        // Add the order to the Orders table
+      await this.database.order.create({
+        data: {
+          userId: userId,
+          assetId: asset.assetId,
+          quantity: cartItem.quantity,
+          totalPrice: asset.price * cartItem.quantity,
+          orderDate: new Date(),
+          bitcoinTransactionId: txId,  // Storing Bitcoin transaction ID
+        },
+      });
 
         transactions.push({
           userId,
@@ -199,6 +212,8 @@ export class CartService {
           date: new Date(),
         });
       }
+
+      console.log(transactions)
 
       // Save transactions to database
       await this.database.purchases.createMany({ data: transactions });
@@ -222,4 +237,32 @@ export class CartService {
       throw error;
     }
   }
+
+  async getMyOrders(userId: number) {
+    try {
+      const orders = await this.database.order.findMany({
+        where: { userId: Number(userId) },
+        include: { asset: true }, // Include the asset details
+      });
+  
+      if (!orders || orders.length === 0) {
+        return { message: 'No orders found.' };
+      }
+  
+      const formattedOrders = orders.map((order) => ({
+        orderId: order.id,
+        assetName: order.asset.assetName,
+        quantity: order.quantity,
+        totalPrice: order.totalPrice,
+        orderDate: order.orderDate,
+        bitcoinTransactionId: order.bitcoinTransactionId,
+      }));
+  
+      return { orders: formattedOrders };
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+  
 }

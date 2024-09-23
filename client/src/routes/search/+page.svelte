@@ -42,7 +42,7 @@
     }
 
     try {
-      const response = await fetch('https://assethub-p926.onrender.com/cart/add', {
+      const response = await fetch('http://localhost:3000/cart/add', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -100,7 +100,7 @@
     console.log('Fetching assets with:', { price, category }); // Debugging output
 
     try {
-      const response = await fetch(`https://assethub-p926.onrender.com/assets/browse?${new URLSearchParams({ price, category }).toString()}`, {
+      const response = await fetch(`http://localhost:3000/assets/browse?${new URLSearchParams({ price, category }).toString()}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -123,98 +123,109 @@
 
 
 
-<div class="grow h-screen bg-gray-100">
-  <nav class="bg-white border-gray-200 dark:bg-gray-900">
+<div class="grow h-dvh bg-indigo-900">
+  <nav class="bg-[#180161] border-gray-200 dark:bg-gray-900">
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-      <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
+    <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
         <img src="./AssetHub.svg" class="h-8" alt="AssetHub Logo" />
-        <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">AssetHub</span>
-      </a>
-      {#if !$isAuthenticated}
-      <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+        <span class="self-center text-2xl font-semibold whitespace-nowrap text-[#EB3678] dark:text-white">AssetHub</span>
+    </a>
+    {#if !$isAuthenticated}
+    <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
         <form action="/login">
-          <button type="submit" class="submit-button text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Get started for free</button>
+            <button type="submit" class="submit-button text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Get started for free</button>
         </form>
-      </div>
-      {:else}
-      <div class="relative inline-block dropdown md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-        <span class="rounded-md shadow-sm">
-          <button class="inline-flex text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" 
-           type="button" aria-haspopup="true" aria-expanded="true" aria-controls="headlessui-menu-items-117">
-            <span>Options</span>
-            <svg class="w-5 h-5 ml-2 -mr-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a 1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+    </div>
+    {:else}
+    <!-- component -->
+    <div class=" relative inline-block dropdown md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+      <span class="rounded-md shadow-sm">
+        <button class="inline-flex text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" 
+         type="button" aria-haspopup="true" aria-expanded="true" aria-controls="headlessui-menu-items-117">
+          <span>Options</span>
+          <svg class="w-5 h-5 ml-2 -mr-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
           </button>
         </span>
-        <div class="hidden dropdown-menu">
-          <div class="absolute right-0 w-56 mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg outline-none" aria-labelledby="headlessui-menu-button-1" id="headlessui-menu-items-117" role="menu">
-            {#if $isAuthenticated}
-            <div class="px-4 py-3">
-              <p class="text-sm leading-5">Signed in as</p>
-              <p class="text-sm font-medium leading-5 text-gray-900 truncate">{$userMail}</p>
-            </div>
-            {/if}
-            <div class="py-1">
-              <a href="/dashboard" class="text-gray-700 flex justify-between w-full px-4 py-2 text-sm leading-5 text-left" role="menuitem">Dashboard</a>
-              <a href="/wallet-connection" class="text-gray-700 flex justify-between w-full px-4 py-2 text-sm leading-5 text-left" role="menuitem">Wallet connection</a>
-              <a href="/profile-settings" class="text-gray-700 flex justify-between w-full px-4 py-2 text-sm leading-5 text-left" role="menuitem">Account settings</a>
-            </div>
-            <div class="py-1">
-              <form on:submit|preventDefault={handleLogout}>
-                <button type="submit" class="text-gray-700 flex justify-between w-full px-4 py-2 text-sm leading-5 text-left" role="menuitem">Sign out</button>
-              </form>
-            </div>
+      <div class="hidden dropdown-menu">
+        <div class="absolute right-0 w-56 mt-2 origin-top-right bg-[#4F1787] border border-[#6c44ee] divide-y divide-[#6c44ee] rounded-md shadow-lg outline-none" aria-labelledby="headlessui-menu-button-1" id="headlessui-menu-items-117" role="menu">
+          {#if $isAuthenticated}
+          <div class="px-4 py-3">
+            <p class="text-sm leading-5 text-[#EB3678]">Signed in as</p>
+            <p class="text-sm font-medium leading-5 text-[#FB773C] truncate">{$userMail}</p>
+          </div>
+          {/if}
+          <div class="py-1">
+            <a href="/dashboard" class="text-[#EB3678] flex justify-between w-full px-4 py-2 text-sm leading-5 text-left"  role="menuitem" >Dashboard</a>
+            <a href="/wallet-connection" class="text-[#EB3678] flex justify-between w-full px-4 py-2 text-sm leading-5 text-left"  role="menuitem" >Wallet connection</a>
+            <!-- <span role="menuitem" tabindex="-1" class="flex justify-between w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 cursor-not-allowed opacity-50" aria-disabled="true">New feature (soon)</span> -->
+            <a href="/profile-settings" class="text-[#EB3678] flex justify-between w-full px-4 py-2 text-sm leading-5 text-left" role="menuitem" >Account settings</a></div>
+          <div class="py-1">
+            <form on:submit={handleLogout}>
+              <button type="submit" class="text-[#EB3678] flex justify-between w-full px-4 py-2 text-sm leading-5 text-left" role="menuitem">
+                Sign out
+              </button>
+            </form>
           </div>
         </div>
       </div>
-      {/if}
-      <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-cta">
-        <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-          <li>
-            <a href="/" class="block py-2 px-3 md:p-0 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:dark:text-blue-500" aria-current="page">Home</a>
+    </div> 
+    {/if}
+    <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-cta">
+      <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-[#180161] md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-[#180161] dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+        <li>
+          <a href="/" class="block py-2 px-3 md:p-0 text-white bg-blue-700 rounded md:bg-transparent md:text-[#FB773C] md:dark:text-blue-500" aria-current="page">Home</a>
+        </li>
+        <li>
+          <a href="/asset-listing" class="block py-2 px-3 md:p-0 text-[#EB3678] rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Asset Listing</a>
+        </li>
+        <li>
+          <a href="/asset-browsing" class="block py-2 px-3 md:p-0 text-[#EB3678] rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Browse Assets</a>
+        </li>
+        <li>
+          <a href="/my-assets" class="block py-2 px-3 md:p-0 text-[#EB3678] rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">My Assets</a>
+        </li>
+        <li>
+          <a href="/cart" class="block py-2 px-3 md:p-0 text-[#EB3678] rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">View Cart</a>
+        </li>
+        <li>
+              <a href="/orders" class="block py-2 px-3 md:p-0 text-[#EB3678] rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">My Orders</a>
           </li>
-          <li>
-            <a href="/asset-listing" class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Asset Listing</a>
-          </li>
-          <li>
-            <a href="/asset-browsing" class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Browse Assets</a>
-          </li>
-          <li>
-            <a href="/cart" class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">View Cart</a>
-          </li>
-        </ul>
-      </div>
+      </ul>
+    </div>
     </div>
   </nav>
 
-  <div class="mt-10 pt-10 w-4/5 p-5 mx-auto rounded-lg shadow-xl dark:bg-white/10 bg-white/30 ring-1 ring-gray-900/5 backdrop-blur-lg">
-    <div class="flex items-center justify-between mb-4">
+  <div class="mt-10 pt-10 w-4/5 p-5 mx-auto rounded-lg shadow-xl dark:bg-white/10 bg-[#180161] ring-1 ring-gray-900/5 backdrop-blur-lg">
+    <div class="flex items-center justify-center mb-4">
       <div class="space-y-1">
-        <h1 class="text-4xl font-bold mb-5 text-gray-900 dark:text-white">Filtered Assets</h1>
+        <h1 class="text-4xl font-bold mb-5 text-[#FB773C] dark:text-white">Filtered Assets</h1>
       </div>
     </div>
 
     <table class="min-w-full divide-y divide-gray-200">
-      <thead class="bg-blue-400">
+      <thead class="text-[#EB3678]">
         <tr>
-          <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Name</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Description</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Price</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Category</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Image</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Actions</th>
+          <th class="px-6 py-3 text-left text-xs font-medium  uppercase tracking-wider">Name</th>
+          <th class="px-6 py-3 text-left text-xs font-medium  uppercase tracking-wider">Description</th>
+          <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Price</th>
+          <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Category</th>
+          <th class="px-6 py-3 text-left text-xs font-medium  uppercase tracking-wider">Image</th>
+          <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
         </tr>
       </thead>
-      <tbody class="bg-white divide-y divide-gray-200">
+      <tbody class="text-[#FB773C] divide-b">
         {#if $assets.length === 0}
           <tr>
-            <td colspan="6" class="px-6 py-4 text-center text-gray-700">No assets available for the selected filters.</td>
+            <td colspan="6" class="px-6 py-4 text-center text-[#FB773C]">No assets available for the selected filters.</td>
           </tr>
         {/if}
         {#each $assets as asset (asset.assetId || `asset-${asset.assetName}`)}
           <tr>
             <td class="px-6 py-4 whitespace-nowrap">{asset.assetName}</td>
-            <td class="px-6 py-4 whitespace-nowrap">{asset.description}</td>
-            <td class="px-6 py-4 whitespace-nowrap">{asset.price}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              {asset.description.length > 30 ? `${asset.description.slice(0, 30)}...` : asset.description}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">{asset.price} SATS</td>
             <td class="px-6 py-4 whitespace-nowrap">{asset.category}</td>
             <td class="px-6 py-4 whitespace-nowrap">
               <img src={asset.thumbnail} alt={asset.assetName} class="w-20 h-20 object-cover" />

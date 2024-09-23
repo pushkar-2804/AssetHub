@@ -49,7 +49,7 @@
       }
 
       try {
-    const response = await fetch('https://assethub-p926.onrender.com/users/profile', {
+    const response = await fetch('http://localhost:3000/users/profile', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -93,7 +93,7 @@
     }
 
     try {
-      const response = await fetch('https://assethub-p926.onrender.com/assets/list', {
+      const response = await fetch('http://localhost:3000/assets/list', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -128,12 +128,12 @@
 
 
 
-<div class="grow bg-gray-100 pb-5">
-  <nav class="bg-white border-gray-200 dark:bg-gray-900">
+<div class="grow bg-indigo-900 pb-5">
+  <nav class="bg-[#180161] border-gray-200 dark:bg-gray-900">
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
     <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
         <img src="./AssetHub.svg" class="h-8" alt="AssetHub Logo" />
-        <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">AssetHub</span>
+        <span class="self-center text-2xl font-semibold whitespace-nowrap text-[#EB3678] dark:text-white">AssetHub</span>
     </a>
     {#if !$isAuthenticated}
     <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
@@ -152,21 +152,21 @@
           </button>
         </span>
       <div class="hidden dropdown-menu">
-        <div class="absolute right-0 w-56 mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg outline-none" aria-labelledby="headlessui-menu-button-1" id="headlessui-menu-items-117" role="menu">
+        <div class="absolute right-0 w-56 mt-2 origin-top-right bg-[#4F1787] border border-[#6c44ee] divide-y divide-[#6c44ee] rounded-md shadow-lg outline-none" aria-labelledby="headlessui-menu-button-1" id="headlessui-menu-items-117" role="menu">
           {#if $isAuthenticated}
           <div class="px-4 py-3">
-            <p class="text-sm leading-5">Signed in as</p>
-            <p class="text-sm font-medium leading-5 text-gray-900 truncate">{$userMail}</p>
+            <p class="text-sm leading-5 text-[#EB3678]">Signed in as</p>
+            <p class="text-sm font-medium leading-5 text-[#FB773C] truncate">{$userMail}</p>
           </div>
           {/if}
           <div class="py-1">
-            <a href="/dashboard" class="text-gray-700 flex justify-between w-full px-4 py-2 text-sm leading-5 text-left"  role="menuitem" >Dashboard</a>
-            <a href="wallet-connection" class="text-gray-700 flex justify-between w-full px-4 py-2 text-sm leading-5 text-left"  role="menuitem" >Wallet connection</a>
+            <a href="/dashboard" class="text-[#EB3678] flex justify-between w-full px-4 py-2 text-sm leading-5 text-left"  role="menuitem" >Dashboard</a>
+            <a href="/wallet-connection" class="text-[#EB3678] flex justify-between w-full px-4 py-2 text-sm leading-5 text-left"  role="menuitem" >Wallet connection</a>
             <!-- <span role="menuitem" tabindex="-1" class="flex justify-between w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 cursor-not-allowed opacity-50" aria-disabled="true">New feature (soon)</span> -->
-            <a href="/profile-settings" class="text-gray-700 flex justify-between w-full px-4 py-2 text-sm leading-5 text-left" role="menuitem" >Account settings</a></div>
+            <a href="/profile-settings" class="text-[#EB3678] flex justify-between w-full px-4 py-2 text-sm leading-5 text-left" role="menuitem" >Account settings</a></div>
           <div class="py-1">
             <form on:submit={handleLogout}>
-              <button type="submit" class="text-gray-700 flex justify-between w-full px-4 py-2 text-sm leading-5 text-left" role="menuitem">
+              <button type="submit" class="text-[#EB3678] flex justify-between w-full px-4 py-2 text-sm leading-5 text-left" role="menuitem">
                 Sign out
               </button>
             </form>
@@ -176,22 +176,25 @@
     </div> 
     {/if}
     <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-cta">
-      <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+      <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-[#180161] md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-[#180161] dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
         <li>
-          <a href="/" class="block py-2 px-3 md:p-0 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:dark:text-blue-500" aria-current="page">Home</a>
+          <a href="/" class="block py-2 px-3 md:p-0 text-white bg-blue-700 rounded md:bg-transparent md:text-[#FB773C] md:dark:text-blue-500" aria-current="page">Home</a>
         </li>
         <li>
-          <a href="/asset-listing" class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Asset Listing</a>
+          <a href="/asset-listing" class="block py-2 px-3 md:p-0 text-[#EB3678] rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Asset Listing</a>
         </li>
         <li>
-          <a href="/asset-browsing" class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Browse Assets</a>
+          <a href="/asset-browsing" class="block py-2 px-3 md:p-0 text-[#EB3678] rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Browse Assets</a>
         </li>
         <li>
-          <a href="/my-assets" class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">My Assets</a>
+          <a href="/my-assets" class="block py-2 px-3 md:p-0 text-[#EB3678] rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">My Assets</a>
         </li>
         <li>
-          <a href="/cart" class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">View Cart</a>
+          <a href="/cart" class="block py-2 px-3 md:p-0 text-[#EB3678] rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">View Cart</a>
         </li>
+        <li>
+              <a href="/orders" class="block py-2 px-3 md:p-0 text-[#EB3678] rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">My Orders</a>
+          </li>
       </ul>
     </div>
     </div>
@@ -200,22 +203,22 @@
 
 
 <div
-class="mt-10 mb-8 pt-10 w-full max-w-xl p-12 mx-auto rounded-lg shadow-xl dark:bg-white/10 bg-white/30 ring-1 ring-gray-900/5 backdrop-blur-lg"
+class="mt-10 mb-8 pt-10 w-full max-w-xl p-12 mx-auto rounded-lg shadow-xl dark:bg-white/10 bg-[#180161] ring-1 ring-gray-900/5 backdrop-blur-lg"
 >
 <form bind:this={form} on:submit|preventDefault={handleSubmit}>
-  <div class="flex flex-wrap -mx-3 mb-2">
-    <div class="font-bold text-2xl"><h1>Create New Assets</h1></div>
+  <div class="flex flex-wrap justify-center text-[#FB773C] -mx-3 mb-2">
+    <div class="font-bold text-4xl"><h1>Create New Assets</h1></div>
     <br>
     <div class="w-full px-3 mb-6 md:mb-0">
       <br>
       <label
-        class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+        class="block uppercase tracking-wide text-[#FB773C] text-xs font-bold mb-2"
         for="assetName"
       >
         Asset Name
       </label>
       <input
-        class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+        class="appearance-none block w-full border-[#8236eb9f] bg-[#8236eb9f] text-[#EB3678] rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
         id="assetName"
         type="text"
         placeholder="Enter asset name "
@@ -226,13 +229,13 @@ class="mt-10 mb-8 pt-10 w-full max-w-xl p-12 mx-auto rounded-lg shadow-xl dark:b
     <div class="w-full px-3 mb-6 md:mb-0">
       <br>
       <label
-        class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+        class="block uppercase tracking-wide text-[#FB773C] text-xs font-bold mb-2"
         for="description"
       >
         Enter the description
       </label>
       <input
-        class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+        class="appearance-none block w-full border-[#8236eb9f] bg-[#8236eb9f] rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
         id="description"
         type="text"
         placeholder="Enter description"
@@ -243,14 +246,14 @@ class="mt-10 mb-8 pt-10 w-full max-w-xl p-12 mx-auto rounded-lg shadow-xl dark:b
     <div class="w-full px-3 mb-6 md:mb-0">
       <br>
       <label
-        class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+        class="block uppercase tracking-wide text-[#FB773C] text-xs font-bold mb-2"
         for="price"
       >
         Enter price
       </label>
 
       <input
-        class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+        class="appearance-none block w-full border-[#8236eb9f] bg-[#8236eb9f] rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
         id="price"
         type="number"
         placeholder="Enter price"
@@ -261,7 +264,7 @@ class="mt-10 mb-8 pt-10 w-full max-w-xl p-12 mx-auto rounded-lg shadow-xl dark:b
     <div class="w-full px-3 mb-6 md:mb-0">
       <br>
       <label
-        class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+        class="block uppercase tracking-wide text-[#FB773C] text-xs font-bold mb-2"
         for="category"
       >
         Category
@@ -280,14 +283,14 @@ class="mt-10 mb-8 pt-10 w-full max-w-xl p-12 mx-auto rounded-lg shadow-xl dark:b
     <div class="w-full px-3 mb-6 md:mb-0">
       <br>
       <label
-        class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+        class="block uppercase tracking-wide text-[#FB773C] text-xs font-bold mb-2"
         for="images"
       >
         Image Upload
       </label>
 
       <input
-        class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+        class="appearance-none block w-full border-[#8236eb9f] bg-[#8236eb9f] rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
         id="images"
         type="file"
         placeholder="Upload Image"
@@ -312,7 +315,7 @@ class="mt-10 mb-8 pt-10 w-full max-w-xl p-12 mx-auto rounded-lg shadow-xl dark:b
       </div>
         <div class="mt-4 flex items-center justify-center gap-4">
             <form on:submit={handleSubmit}>
-              <button type="submit" class="submit-button text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" role="menuitem">
+              <button type="submit" class="submit-button text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-3 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 " role="menuitem">
                 Create Asset
               </button>
             </form>
